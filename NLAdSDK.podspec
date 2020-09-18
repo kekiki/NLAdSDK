@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
 TODO: Add long description of the pod here.
                        DESC
 
+  s.static_framework = true
   s.homepage         = 'https://github.com/Ke Jie/NLAdSDK'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
@@ -38,5 +39,8 @@ TODO: Add long description of the pod here.
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'YYCategories'
+  s.dependency 'Google-Mobile-Ads-SDK', '7.62.0'
+  s.dependency 'GoogleMobileAdsMediationFacebook', '~> 5.10'
+#  s.dependency 'FBSDKCoreKit', '~> 7.0.1'
 end

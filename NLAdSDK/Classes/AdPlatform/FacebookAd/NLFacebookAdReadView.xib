@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment version="4096" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="ovn-uw-Ymn" customClass="NLFacebookAdReadView">
+            <rect key="frame" x="0.0" y="0.0" width="325" height="310"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wuE-MM-iAh" customClass="FBMediaView">
+                    <rect key="frame" x="0.0" y="0.0" width="325" height="183"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                </view>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6SF-KR-K36">
+                    <rect key="frame" x="14" y="197" width="48" height="48"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="48" id="gNX-U2-Wym"/>
+                        <constraint firstAttribute="height" constant="48" id="nnc-Oa-bdI"/>
+                    </constraints>
+                </imageView>
+                <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="waC-Ln-xwI" customClass="FBMediaView">
+                    <rect key="frame" x="14" y="197" width="48" height="48"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="48" id="0Fo-6B-gQm"/>
+                        <constraint firstAttribute="width" constant="48" id="mPJ-Po-wFa"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadiu">
+                            <real key="value" value="12"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="叠仓鼠-免费抽手机" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oe0-5R-rtd">
+                    <rect key="frame" x="74" y="201" width="237" height="17"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
+                    <color key="textColor" red="0.1176470588" green="0.17254901959999999" blue="0.27058823529999998" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="没钱还想换手机？那就下载叠仓鼠免费抽…" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N02-a1-KvM">
+                    <rect key="frame" x="74" y="225.5" width="237" height="15"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" red="0.66666666669999997" green="0.70196078429999997" blue="0.74117647060000003" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cad-7a-mWA">
+                    <rect key="frame" x="14" y="258" width="297" height="38"/>
+                    <color key="backgroundColor" red="0.99607843139999996" green="0.57254901960000004" blue="0.062745098040000002" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="38" id="wih-ZC-euc"/>
+                    </constraints>
+                    <state key="normal" title="安装">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadiu">
+                            <real key="value" value="19"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ad" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vmR-JE-nW9">
+                    <rect key="frame" x="0.0" y="0.0" width="19" height="12"/>
+                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="19" id="K2l-dg-kjV"/>
+                        <constraint firstAttribute="height" constant="12" id="z1z-wx-0Gc"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="9"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadiu">
+                            <real key="value" value="2"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </label>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="oe0-5R-rtd" secondAttribute="trailing" constant="14" id="1Fs-iJ-AY7"/>
+                <constraint firstItem="vmR-JE-nW9" firstAttribute="leading" secondItem="ovn-uw-Ymn" secondAttribute="leading" id="4Z3-Ue-HPo"/>
+                <constraint firstItem="Cad-7a-mWA" firstAttribute="leading" secondItem="ovn-uw-Ymn" secondAttribute="leading" constant="14" id="Q84-uo-aOm"/>
+                <constraint firstItem="wuE-MM-iAh" firstAttribute="leading" secondItem="ovn-uw-Ymn" secondAttribute="leading" id="QHb-AN-aht"/>
+                <constraint firstItem="waC-Ln-xwI" firstAttribute="centerX" secondItem="6SF-KR-K36" secondAttribute="centerX" id="Wdf-It-M1j"/>
+                <constraint firstAttribute="bottom" secondItem="6SF-KR-K36" secondAttribute="bottom" constant="65" id="WpF-Gn-8qV"/>
+                <constraint firstItem="N02-a1-KvM" firstAttribute="leading" secondItem="6SF-KR-K36" secondAttribute="trailing" constant="12" id="ads-pN-8Hl"/>
+                <constraint firstAttribute="bottom" secondItem="Cad-7a-mWA" secondAttribute="bottom" constant="14" id="bYA-QZ-yXa"/>
+                <constraint firstItem="waC-Ln-xwI" firstAttribute="centerY" secondItem="6SF-KR-K36" secondAttribute="centerY" id="diT-er-DLn"/>
+                <constraint firstItem="wuE-MM-iAh" firstAttribute="top" secondItem="ovn-uw-Ymn" secondAttribute="top" id="eE3-bZ-9Mk"/>
+                <constraint firstItem="vmR-JE-nW9" firstAttribute="top" secondItem="ovn-uw-Ymn" secondAttribute="top" id="egI-bv-TAa"/>
+                <constraint firstItem="oe0-5R-rtd" firstAttribute="leading" secondItem="6SF-KR-K36" secondAttribute="trailing" constant="12" id="iBv-9z-lh4"/>
+                <constraint firstAttribute="trailing" secondItem="N02-a1-KvM" secondAttribute="trailing" constant="14" id="lr0-HB-eiR"/>
+                <constraint firstItem="oe0-5R-rtd" firstAttribute="top" secondItem="wuE-MM-iAh" secondAttribute="bottom" constant="18" id="nw6-rH-PDf"/>
+                <constraint firstItem="6SF-KR-K36" firstAttribute="leading" secondItem="ovn-uw-Ymn" secondAttribute="leading" constant="14" id="sDg-My-ciC"/>
+                <constraint firstAttribute="trailing" secondItem="Cad-7a-mWA" secondAttribute="trailing" constant="14" id="t4b-3A-m7B"/>
+                <constraint firstAttribute="trailing" secondItem="wuE-MM-iAh" secondAttribute="trailing" id="tj9-Tf-nNp"/>
+                <constraint firstAttribute="bottom" secondItem="wuE-MM-iAh" secondAttribute="bottom" constant="127" id="ull-IV-BsB"/>
+                <constraint firstItem="N02-a1-KvM" firstAttribute="bottom" secondItem="6SF-KR-K36" secondAttribute="bottom" constant="-4.5" id="vDY-O2-crJ"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="bodyView" destination="N02-a1-KvM" id="tXf-y0-HRy"/>
+                <outlet property="callToActionView" destination="Cad-7a-mWA" id="uu0-x9-Wel"/>
+                <outlet property="headlineView" destination="oe0-5R-rtd" id="9yI-SL-Nha"/>
+                <outlet property="iconView" destination="waC-Ln-xwI" id="fC7-8T-x1L"/>
+                <outlet property="mediaView" destination="wuE-MM-iAh" id="4Hf-5f-yVz"/>
+            </connections>
+            <point key="canvasLocation" x="836" y="85"/>
+        </view>
+    </objects>
+</document>

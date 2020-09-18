@@ -7,6 +7,7 @@
 //
 
 #import "NLViewController.h"
+#import <NLAdSDK.h>
 
 @interface NLViewController ()
 
@@ -18,12 +19,10 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    UIView *readView = [[NLAdManager sharedManager] nativeAdViewWithPlaceCode:(NLNativeAdPlaceCodeNovelRead)];
+    [self.view addSubview:readView];
+    
+    [[NLAdManager sharedManager] loadNativeAdWithPlaceCode:NLNativeAdPlaceCodeNovelRead completion:nil];
 }
 
 @end

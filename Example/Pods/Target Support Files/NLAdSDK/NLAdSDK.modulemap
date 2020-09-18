@@ -1,0 +1,6 @@
+framework module NLAdSDK {
+  umbrella header "NLAdSDK-umbrella.h"
+
+  export *
+  module * { export * }
+}
