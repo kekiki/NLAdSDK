@@ -7,12 +7,13 @@
 //
 
 #import <GoogleMobileAds/GoogleMobileAds.h>
+#import "NLAdViewProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class NLAdAttribute;
 
-@interface NLGoogleNativeAdView : GADUnifiedNativeAdView
+@interface NLGoogleNativeAdView : GADUnifiedNativeAdView <NLAdViewProtocol>
 
 + (instancetype)createView;
 

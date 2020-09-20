@@ -44,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param placeCode 广告位
 - (void)setNativeAdAttributes:(NLAdAttribute *)attributes placeCode:(NLAdPlaceCode)placeCode;
 
+/// 获取广告数据实例
+/// 适用于NLNativeUnifiedAdView setupAdObject:
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLAdPlaceCode)placeCode;
+
 // 激励
 
 /// 是否有激励广告正在播放

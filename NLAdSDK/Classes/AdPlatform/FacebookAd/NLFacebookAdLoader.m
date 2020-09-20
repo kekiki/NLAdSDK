@@ -13,13 +13,14 @@
 #import "NLPlatformAdLoaderConfig.h"
 #import "NLAdAttribute.h"
 #import "NLAdLog.h"
+#import "NLReadAdObject.h"
 @import FBAudienceNetwork;
 
 @interface NLFacebookAdLoader() <FBNativeAdDelegate, FBRewardedVideoAdDelegate>
 
 // 原生
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSObject *> *adLoaderDict;
-
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSObject *> *adObjectDict;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UIView *> *adViewDict;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NLAdAttribute *> *adAttributes;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSValue *> *adViewValues;
@@ -37,6 +38,13 @@
         _adLoaderDict = [[NSMutableDictionary<NSString *, NSObject *> alloc] init];
     }
     return _adLoaderDict;
+}
+
+- (NSMutableDictionary<NSString *,NSObject *> *)adObjectDict {
+    if (_adObjectDict == nil) {
+        _adObjectDict = [[NSMutableDictionary<NSString *, NSObject *> alloc] init];
+    }
+    return _adObjectDict;
 }
 
 - (NSMutableDictionary<NSString *,UIView *> *)adViewDict {
@@ -115,10 +123,9 @@
         adView = view;
     } else if (placeCode == NLAdPlaceCodeNativeNovelRead
                || placeCode == NLAdPlaceCodeNativeComicRead) {
-        NLFacebookAdReadView *view = [NLFacebookAdReadView createView];
-        view.frame = CGRectMake(0, 0, 325, 310);
-        [view setupAdModel:nativeAd];
-        adView = view;
+        NLReadAdObject *object = [[NLReadAdObject alloc] initWithPlaceCode:placeCode adPlatform:NLAdPlatformFacebook adObject:nativeAd];
+        [self.adObjectDict setObject:object forKey:@(placeCode).stringValue];
+        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
                || placeCode == NLAdPlaceCodeNativeComicBottom) {
         NLFacebookAdBannerView *view = [NLFacebookAdBannerView createView];
@@ -128,7 +135,6 @@
     }
     if (adView != nil) {
         [self.adViewDict setObject:adView forKey:@(placeCode).stringValue];
-        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     }
     
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:loadAdFinishedWithPlaceCode:error:placeId:)]) {
@@ -242,18 +248,11 @@
 
 - (nullable UIView *)adViewWithPlaceCode:(NLAdPlaceCode)placeCode {
     UIView *adView = [self.adViewDict objectForKey:@(placeCode).stringValue];
-    if (placeCode == NLAdPlaceCodeNativeNovelRead || placeCode == NLAdPlaceCodeNativeComicRead) {
-        [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
-    } else {
-        [self.adViewDict removeObjectForKey:@(placeCode).stringValue];
-    }
+    [self.adViewDict removeObjectForKey:@(placeCode).stringValue];
+    
     NLAdAttribute *attributes = [self.adAttributes objectForKey:@(placeCode).stringValue];
     if (placeCode == NLAdPlaceCodeNativeSplash) {
         NLFacebookAdSplashView *view = (NLFacebookAdSplashView *)adView;
-        [view setAdConfig:attributes];
-    } else if (placeCode == NLAdPlaceCodeNativeNovelRead
-               || placeCode == NLAdPlaceCodeNativeComicRead) {
-        NLFacebookAdReadView *view = (NLFacebookAdReadView *)adView;
         [view setAdConfig:attributes];
     } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
                || placeCode == NLAdPlaceCodeNativeComicBottom) {
@@ -273,16 +272,17 @@
         if (placeCode == NLAdPlaceCodeNativeSplash) {
             NLFacebookAdSplashView *view = (NLFacebookAdSplashView *)adView;
             [view setAdConfig:attributes];
-        } else if (placeCode == NLAdPlaceCodeNativeNovelRead
-                   || placeCode == NLAdPlaceCodeNativeComicRead) {
-            NLFacebookAdReadView *view = (NLFacebookAdReadView *)adView;
-            [view setAdConfig:attributes];
         } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
                    || placeCode == NLAdPlaceCodeNativeComicBottom) {
             NLFacebookAdBannerView *view = (NLFacebookAdBannerView *)adView;
             [view setAdConfig:attributes];
         }
     }
+}
+
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLAdPlaceCode)placeCode {
+    [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
+    return [self.adObjectDict objectForKey:@(placeCode).stringValue];
 }
 
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {

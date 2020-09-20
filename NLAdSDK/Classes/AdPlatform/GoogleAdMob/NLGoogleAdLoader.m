@@ -14,13 +14,14 @@
 #import "NLPlatformAdLoaderConfig.h"
 #import "NLAdAttribute.h"
 #import "NLAdModelProtocol.h"
+#import "NLReadAdObject.h"
 #import "NLAdLog.h"
 
 @interface NLGoogleAdLoader()<GADUnifiedNativeAdLoaderDelegate, GADUnifiedNativeAdDelegate, GADRewardedAdDelegate>
 
 // 原生
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSObject *> *adLoaderDict;
-
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSObject *> *adObjectDict;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UIView *> *adViewDict;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NLAdAttribute *> *adAttributes;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSValue *> *adViewValues;
@@ -39,6 +40,13 @@
         _adLoaderDict = [[NSMutableDictionary<NSString *, NSObject *> alloc] init];
     }
     return _adLoaderDict;
+}
+
+- (NSMutableDictionary<NSString *,NSObject *> *)adObjectDict {
+    if (_adObjectDict == nil) {
+        _adObjectDict = [[NSMutableDictionary<NSString *, NSObject *> alloc] init];
+    }
+    return _adObjectDict;
 }
 
 - (NSMutableDictionary<NSString *,UIView *> *)adViewDict {
@@ -149,10 +157,9 @@
         [view setupAdModel:nativeAd];
         adView = view;
     } else if (placeCode == NLAdPlaceCodeNativeNovelRead || placeCode == NLAdPlaceCodeNativeComicRead) {
-        NLGoogleAdReadView *view = [NLGoogleAdReadView createView];
-        view.frame = CGRectMake(0, 0, 325, 310);
-        [view setupAdModel:nativeAd];
-        adView = view;
+        NLReadAdObject *object = [[NLReadAdObject alloc] initWithPlaceCode:placeCode adPlatform:NLAdPlatformAdmob adObject:nativeAd];
+        [self.adObjectDict setObject:object forKey:@(placeCode).stringValue];
+        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     } else if (placeCode == NLAdPlaceCodeNativeNovelBottom || placeCode == NLAdPlaceCodeNativeComicBottom) {
         NLGoogleAdBannerView *view = [NLGoogleAdBannerView createView];
         view.frame = CGRectMake(0, 0, 320, 66);
@@ -161,7 +168,6 @@
     }
     if (adView != nil) {
         [self.adViewDict setObject:adView forKey:@(placeCode).stringValue];
-        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     }
 }
 
@@ -308,24 +314,23 @@
 }
 
 - (BOOL)hasAdWithPlaceCode:(NLAdPlaceCode)placeCode {
+    if (placeCode == NLAdPlaceCodeNativeNovelRead
+        || placeCode == NLAdPlaceCodeNativeComicRead) {
+        NSObject *object = [self.adObjectDict objectForKey:@(placeCode).stringValue];
+        return object != nil;
+    }
+    
     UIView *adView = [self.adViewDict objectForKey:@(placeCode).stringValue];
     return adView != nil;
 }
 
 - (nullable UIView *)adViewWithPlaceCode:(NLAdPlaceCode)placeCode {
     UIView *adView = [self.adViewDict objectForKey:@(placeCode).stringValue];
-    if (placeCode == NLAdPlaceCodeNativeNovelRead || placeCode == NLAdPlaceCodeNativeComicRead) {
-        [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
-    } else {
-        [self.adViewDict removeObjectForKey:@(placeCode).stringValue];
-    }
+    [self.adViewDict removeObjectForKey:@(placeCode).stringValue];
     
     NLAdAttribute *attributes = [self.adAttributes objectForKey:@(placeCode).stringValue];
     if (placeCode == NLAdPlaceCodeNativeSplash) {
         NLGoogleAdSplashView *view = (NLGoogleAdSplashView *)adView;
-        [view setAdConfig:attributes];
-    } else if (placeCode == NLAdPlaceCodeNativeNovelRead || placeCode == NLAdPlaceCodeNativeComicRead) {
-        NLGoogleAdReadView *view = (NLGoogleAdReadView *)adView;
         [view setAdConfig:attributes];
     } else if (placeCode == NLAdPlaceCodeNativeNovelBottom || placeCode == NLAdPlaceCodeNativeComicBottom) {
         NLGoogleAdBannerView *view = (NLGoogleAdBannerView *)adView;
@@ -344,14 +349,17 @@
         if (placeCode == NLAdPlaceCodeNativeSplash) {
             NLGoogleAdSplashView *view = (NLGoogleAdSplashView *)adView;
             [view setAdConfig:attributes];
-        } else if (placeCode == NLAdPlaceCodeNativeNovelRead || placeCode == NLAdPlaceCodeNativeComicRead) {
-            NLGoogleAdReadView *view = (NLGoogleAdReadView *)adView;
-            [view setAdConfig:attributes];
-        } else if (placeCode == NLAdPlaceCodeNativeNovelBottom || placeCode == NLAdPlaceCodeNativeComicBottom) {
+        } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
+                   || placeCode == NLAdPlaceCodeNativeComicBottom) {
             NLGoogleAdBannerView *view = (NLGoogleAdBannerView *)adView;
             [view setAdConfig:attributes];
         }
     }
+}
+
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLAdPlaceCode)placeCode {
+    [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
+    return [self.adObjectDict objectForKey:@(placeCode).stringValue];
 }
 
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {

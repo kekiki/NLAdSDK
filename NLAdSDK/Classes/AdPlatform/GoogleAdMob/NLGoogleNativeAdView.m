@@ -24,16 +24,4 @@
     
 }
 
-- (BOOL)isEqual:(id)object {
-    if (![object isKindOfClass:NLGoogleNativeAdView.class]) {
-        return NO;
-    }
-    NLGoogleNativeAdView *adView = (NLGoogleNativeAdView *)object;
-    GADUnifiedNativeAd *ad1 = adView.nativeAd;
-    GADUnifiedNativeAd *ad2 = self.nativeAd;
-    return [ad1.headline isEqualToString:ad2.headline]
-    && [ad1.body isEqualToString:ad2.body]
-    && [ad1.advertiser isEqualToString:ad2.advertiser];
-}
-
 @end

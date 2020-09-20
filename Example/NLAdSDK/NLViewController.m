@@ -7,7 +7,8 @@
 //
 
 #import "NLViewController.h"
-#import <NLAdSDK.h>
+//#import <NLAdSDK.h>
+#import <NLAdSDK/NLAdSDK.h>
 
 @interface NLViewController ()
 
@@ -19,10 +20,10 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    UIView *readView = [[NLAdManager sharedManager] nativeAdViewWithPlaceCode:(NLNativeAdPlaceCodeNovelRead)];
-    [self.view addSubview:readView];
-    
-    [[NLAdManager sharedManager] loadNativeAdWithPlaceCode:NLNativeAdPlaceCodeNovelRead completion:nil];
+//    UIView *readView = [[NLAdManager sharedManager] nativeAdViewWithPlaceCode:(NLNativeAdPlaceCodeNovelRead)];
+//    [self.view addSubview:readView];
+//
+//    [[NLAdManager sharedManager] loadNativeAdWithPlaceCode:NLNativeAdPlaceCodeNovelRead completion:nil];
 }
 
 @end

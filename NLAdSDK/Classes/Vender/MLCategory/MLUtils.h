@@ -21,6 +21,7 @@
 #import "UIView+Gradient.h"
 #import "UIView+screenshot.h"
 #import "UIViewController+CBBlock.h"
+#import "UIColor+Hex.h"
 
 /**
  * 返回非nil String

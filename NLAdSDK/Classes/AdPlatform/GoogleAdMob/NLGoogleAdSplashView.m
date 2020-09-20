@@ -13,7 +13,6 @@
 #import "UIImage+Add.h"
 #import "NLAdAttribute.h"
 #import <YYCategories/YYCategories.h>
-#import "UIColor+Hex.h"
 
 @interface NLGoogleAdSplashView ()
 @property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
@@ -33,7 +32,7 @@
         self.coverBgConstraints.constant = 0;
     }
 
-    ((UILabel *)self.bodyView).textColor = [UIColor colorWithHex:0x222222];
+    ((UILabel *)self.bodyView).textColor = UIColorHexStr(@"#222222");
     self.iconView.layer.cornerRadius = 12.0;
     self.iconView.layer.masksToBounds = true;
     self.iconView.layer.borderColor = UIColor.whiteColor.CGColor;

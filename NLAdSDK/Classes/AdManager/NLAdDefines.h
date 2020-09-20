@@ -9,43 +9,10 @@
 #ifndef NLAdDefines_h
 #define NLAdDefines_h
 
-#ifndef weakify
-    #if DEBUG
-        #if __has_feature(objc_arc)
-        #define weakify(object) autoreleasepool{} __weak __typeof__(object) weak##_##object = object;
-        #else
-        #define weakify(object) autoreleasepool{} __block __typeof__(object) block##_##object = object;
-        #endif
-    #else
-        #if __has_feature(objc_arc)
-        #define weakify(object) try{} @finally{} {} __weak __typeof__(object) weak##_##object = object;
-        #else
-        #define weakify(object) try{} @finally{} {} __block __typeof__(object) block##_##object = object;
-        #endif
-    #endif
-#endif
-
-#ifndef strongify
-    #if DEBUG
-        #if __has_feature(objc_arc)
-        #define strongify(object) autoreleasepool{} __typeof__(object) object = weak##_##object;
-        #else
-        #define strongify(object) autoreleasepool{} __typeof__(object) object = block##_##object;
-        #endif
-    #else
-        #if __has_feature(objc_arc)
-        #define strongify(object) try{} @finally{} __typeof__(object) object = weak##_##object;
-        #else
-        #define strongify(object) try{} @finally{} __typeof__(object) object = block##_##object;
-        #endif
-    #endif
-#endif
-
 /// 广告平台定义
 typedef NS_ENUM(NSInteger, NLAdPlatform) {
     NLAdPlatformAdmob = 1,          //Google AdMob
     NLAdPlatformFacebook = 2,       //Facebook
-    NLAdPlatformMoPub = 3,       //MoPub
 };
 
 /**
@@ -53,11 +20,15 @@ typedef NS_ENUM(NSInteger, NLAdPlatform) {
 http://wiki.local/pages/viewpage.action?pageId=3803267
 */
 
+// 阅读原生广告位代码
+typedef NS_ENUM(NSInteger, NLReadAdPlaceCode) {
+    NLReadAdPlaceCodeNovel = 1001,//小说阅读
+    NLReadAdPlaceCodeComic = 1002,//漫画阅读
+};
+
 // 原生广告位代码
 typedef NS_ENUM(NSInteger, NLNativeAdPlaceCode) {
     NLNativeAdPlaceCodeSplash = 1000,//开屏
-    NLNativeAdPlaceCodeNovelRead = 1001,//小说阅读
-    NLNativeAdPlaceCodeComicRead = 1002,//漫画阅读
     NLNativeAdPlaceCodeNovelBottom = 1003,//小说底部
     NLNativeAdPlaceCodeComicBottom = 1004,//漫画底部
 };
@@ -77,8 +48,8 @@ typedef NS_ENUM(NSInteger, NLAdPlaceCode) {
     
     // 原生广告
     NLAdPlaceCodeNativeSplash = NLNativeAdPlaceCodeSplash,//开屏
-    NLAdPlaceCodeNativeNovelRead = NLNativeAdPlaceCodeNovelRead,//小说阅读
-    NLAdPlaceCodeNativeComicRead = NLNativeAdPlaceCodeComicRead,//漫画阅读
+    NLAdPlaceCodeNativeNovelRead = NLReadAdPlaceCodeNovel,//小说阅读
+    NLAdPlaceCodeNativeComicRead = NLReadAdPlaceCodeComic,//漫画阅读
     NLAdPlaceCodeNativeNovelBottom = NLNativeAdPlaceCodeNovelBottom,//小说底部
     NLAdPlaceCodeNativeComicBottom = NLNativeAdPlaceCodeComicBottom,//漫画底部
     

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NLAdViewProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class FBNativeAd;
 @class NLAdAttribute;
 
-@interface NLFacebookNativeAdView : UIView
+@interface NLFacebookNativeAdView : UIView <NLAdViewProtocol>
 
 @property(nonatomic, weak, nullable) IBOutlet FBMediaView *mediaView;
 @property(nonatomic, weak, nullable) IBOutlet FBMediaView *iconView;

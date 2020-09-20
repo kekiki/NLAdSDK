@@ -12,7 +12,6 @@
 #import "MLUtils.h"
 #import "UIImage+Add.h"
 #import "NLAdAttribute.h"
-#import "UIColor+Hex.h"
 #import <YYCategories/YYCategories.h>
 
 @import FBAudienceNetwork;
@@ -42,7 +41,7 @@
         // Fallback on earlier versions
         self.coverBgConstraints.constant = 0;
     }
-    self.bodyView.textColor = [UIColor colorWithHex:0x222222];
+    self.bodyView.textColor = UIColorHexStr(@"#222222");
     self.iconView.layer.cornerRadius = 12.0;
     self.iconView.layer.masksToBounds = true;
     self.iconView.layer.borderColor = UIColor.whiteColor.CGColor;

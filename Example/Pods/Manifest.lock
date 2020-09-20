@@ -35,11 +35,15 @@ PODS:
     - nanopb/encode (= 1.30906.0)
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
-  - NLAdSDK (0.1.0):
+  - NLAdSDK (0.1.1):
     - Google-Mobile-Ads-SDK (= 7.62.0)
     - GoogleMobileAdsMediationFacebook (~> 5.10)
+    - SDWebImage
     - YYCategories
   - PromisesObjC (1.2.10)
+  - SDWebImage (5.9.1):
+    - SDWebImage/Core (= 5.9.1)
+  - SDWebImage/Core (5.9.1)
   - YYCategories (1.0.4):
     - YYCategories/no-arc (= 1.0.4)
   - YYCategories/no-arc (1.0.4)
@@ -57,6 +61,7 @@ SPEC REPOS:
     - GoogleUtilities
     - nanopb
     - PromisesObjC
+    - SDWebImage
     - YYCategories
 
 EXTERNAL SOURCES:
@@ -71,8 +76,9 @@ SPEC CHECKSUMS:
   GoogleMobileAdsMediationFacebook: 22e37144dabf56418439e7a48a12495838f153f2
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
-  NLAdSDK: c747aad02e09667730302d6ed4ac14cdf8d2a6df
+  NLAdSDK: 874cc9c5502af67b4002862a070d2749475ea6d0
   PromisesObjC: b14b1c6b68e306650688599de8a45e49fae81151
+  SDWebImage: a990c053fff71e388a10f3357edb0be17929c9c5
   YYCategories: 6bcd4314c6661a561410dce4a793379ebd306abd
 
 PODFILE CHECKSUM: 8ed0274286b3905aab9955c27aa11c2ee4b0289c

@@ -12,9 +12,11 @@
 #import "NLAdManager.h"
 #import "NLAdManager+NativeAd.h"
 #import "NLAdManager+RewardAd.h"
+#import "NLAdManager+ReadAd.h"
 
 #import "NLAdDefines.h"
 #import "NLAdModelProtocol.h"
 #import "NLAdAttribute.h"
+#import "NLAdReadAdView.h"
 
 #endif /* NLAdSDK_h */

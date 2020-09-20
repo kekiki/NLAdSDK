@@ -8,39 +8,38 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NLAdSDK'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of NLAdSDK.'
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
+  s.version          = '0.1.1'
+  s.summary          = '聚合广告SDK'
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
+                         NLAdSDK 是一个聚合广告SDK
+                         * 支持Google原生和激励广告
+                         * 支持Facebook原生和激励广告
+                         DESC
 
   s.static_framework = true
-  s.homepage         = 'https://github.com/Ke Jie/NLAdSDK'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+  s.homepage         = 'https://github.com/kekiki/NLAdSDK'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Ke Jie' => 'kekiki@126.com' }
-  s.source           = { :git => 'https://github.com/Ke Jie/NLAdSDK.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  
+  s.author           = { 'kekiki' => 'kekiki@126.com' }
+  s.source           = { :git => 'https://github.com/kekiki/NLAdSDK.git', :tag => s.version }
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '10.0'
 
   s.source_files = 'NLAdSDK/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'NLAdSDK' => ['NLAdSDK/Assets/*.png']
-  # }
+  #s.resource_bundles = {
+  #  'NLAdSDK' => ['NLAdSDK/Assets/*.png']
+  #}
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
+  s.public_header_files = 'NLAdSDK/Classes/**/*.h'
+  
+  s.requires_arc        = true
+  s.frameworks          = 'UIKit', 'Foundation', 'CoreGraphics'
+  
+  s.dependency 'SDWebImage'
   s.dependency 'YYCategories'
   s.dependency 'Google-Mobile-Ads-SDK', '7.62.0'
   s.dependency 'GoogleMobileAdsMediationFacebook', '~> 5.10'
-#  s.dependency 'FBSDKCoreKit', '~> 7.0.1'
+  
 end

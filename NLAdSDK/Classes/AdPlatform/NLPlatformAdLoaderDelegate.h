@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasAdWithPlaceCode:(NLAdPlaceCode)placeCode;
 - (nullable UIView *)adViewWithPlaceCode:(NLAdPlaceCode)placeCode;
 - (void)setAdAttributes:(NLAdAttribute *)attributes placeCode:(NLAdPlaceCode)placeCode;
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLAdPlaceCode)placeCode;
 
 // 激励
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId;

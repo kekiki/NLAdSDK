@@ -6,6 +6,7 @@
 //  Copyright © 2020 panling. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "NLAdModelProtocol.h"
 

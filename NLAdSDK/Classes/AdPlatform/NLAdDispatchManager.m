@@ -11,6 +11,7 @@
 #import "NLPlatformAdLoaderDelegate.h"
 #import "NLPlatformAdLoaderConfig.h"
 #import "NLAdAttribute.h"
+#import <YYCategories/YYCategories.h>
 
 static NSInteger const kReadBottomAdViewTag = 1001;
 static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
@@ -172,6 +173,7 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
     } else {
         id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode];
         UIView *adView = [adLoader adViewWithPlaceCode:placeCode];
+        adView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         adView.frame = [UIScreen mainScreen].bounds;
         [self loadNativeAdWithPlaceCode:placeCode completion:nil];
         return adView;
@@ -189,6 +191,13 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
             }
         }
     }
+}
+
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLAdPlaceCode)placeCode {
+    id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode];
+    __kindof NSObject *adObject = [adLoader readAdObjectWithPlaceCode:placeCode];
+    [self loadNativeAdWithPlaceCode:placeCode completion:nil];
+    return adObject;
 }
 
 - (void)startAutoChangeReadBottomAdWithPlaceCode:(NSTimer *)timer {

@@ -1,26 +1,36 @@
 {
   "name": "NLAdSDK",
-  "version": "0.1.0",
-  "summary": "A short description of NLAdSDK.",
-  "description": "TODO: Add long description of the pod here.",
+  "version": "0.1.1",
+  "summary": "聚合广告SDK",
+  "description": "NLAdSDK 是一个聚合广告SDK\n* 支持Google原生和激励广告\n* 支持Facebook原生和激励广告",
   "static_framework": true,
-  "homepage": "https://github.com/Ke Jie/NLAdSDK",
+  "homepage": "https://github.com/kekiki/NLAdSDK",
   "license": {
     "type": "MIT",
     "file": "LICENSE"
   },
   "authors": {
-    "Ke Jie": "kekiki@126.com"
+    "kekiki": "kekiki@126.com"
   },
   "source": {
-    "git": "https://github.com/Ke Jie/NLAdSDK.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/kekiki/NLAdSDK.git",
+    "tag": "0.1.1"
   },
   "platforms": {
-    "ios": "8.0"
+    "ios": "10.0"
   },
   "source_files": "NLAdSDK/Classes/**/*",
+  "public_header_files": "NLAdSDK/Classes/**/*.h",
+  "requires_arc": true,
+  "frameworks": [
+    "UIKit",
+    "Foundation",
+    "CoreGraphics"
+  ],
   "dependencies": {
+    "SDWebImage": [
+
+    ],
     "YYCategories": [
 
     ],

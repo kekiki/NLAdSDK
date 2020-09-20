@@ -24,16 +24,4 @@
     
 }
 
-- (BOOL)isEqual:(id)object {
-    if (![object isKindOfClass:NLFacebookNativeAdView.class]) {
-        return NO;
-    }
-    NLFacebookNativeAdView *adView = (NLFacebookNativeAdView *)object;
-    NLFacebookNativeAdView *ad1 = adView;
-    NLFacebookNativeAdView *ad2 = self;
-    return [ad1.headlineView.text isEqualToString:ad2.headlineView.text]
-    && [ad1.bodyView.text isEqualToString:ad2.bodyView.text]
-    && [ad1.advertiserView.text isEqualToString:ad2.advertiserView.text];
-}
-
 @end
