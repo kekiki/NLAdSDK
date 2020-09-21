@@ -20,7 +20,11 @@
     "ios": "10.0"
   },
   "source_files": "NLAdSDK/Classes/**/*",
-  "public_header_files": "NLAdSDK/Classes/**/*.h",
+  "public_header_files": "NLAdSDK/Classes/AdManager/*.h",
+  "private_header_files": [
+    "NLAdSDK/Classes/AdPlatform/*.h",
+    "NLAdSDK/Classes/Vender/*.h"
+  ],
   "requires_arc": true,
   "frameworks": [
     "UIKit",
