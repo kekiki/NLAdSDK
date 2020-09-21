@@ -32,7 +32,8 @@ Pod::Spec.new do |s|
   #  'NLAdSDK' => ['NLAdSDK/Assets/*.png']
   #}
 
-  s.public_header_files = 'NLAdSDK/Classes/**/*.h'
+  s.public_header_files = 'NLAdSDK/Classes/AdManager/*.h'
+  s.private_header_files = 'NLAdSDK/Classes/AdPlatform/*.h', 'NLAdSDK/Classes/Vender/*.h'
   
   s.requires_arc        = true
   s.frameworks          = 'UIKit', 'Foundation', 'CoreGraphics'

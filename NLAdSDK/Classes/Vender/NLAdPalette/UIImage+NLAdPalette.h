@@ -13,10 +13,10 @@
 
 //To avoid some weird problems,so I add the "NLAdPalette" prefix to the API declaration
 
-- (void)getPaletteImageColor:(GetColorBlock)block;
+- (void)getPaletteImageColor:(NLAdGetColorBlock)block;
 
 //you can use '|' to separate every target mode ,eg :"DARK_VIBRANT_PALETTE | VIBRANT_PALETTE"
 
-- (void)getPaletteImageColorWithMode:(NLAdPaletteTargetMode)mode withCallBack:(GetColorBlock)block;
+- (void)getPaletteImageColorWithMode:(NLAdPaletteTargetMode)mode withCallBack:(NLAdGetColorBlock)block;
 
 @end

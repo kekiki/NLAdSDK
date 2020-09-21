@@ -40,7 +40,7 @@
     for (int i = 0 ; i < [_vboxArray count] ; i++){
         NLAdVBox *nowBox = (NLAdVBox*)[_vboxArray objectAtIndex:i];
         
-        if ([box getVolume] > [nowBox getVolume]){
+        if ([box getBoxVolume] > [nowBox getBoxVolume]){
             [_vboxArray insertObject:box atIndex:i];
             if (_vboxArray.count > kMaxColorNum){
                 [_vboxArray removeObjectAtIndex:kMaxColorNum];

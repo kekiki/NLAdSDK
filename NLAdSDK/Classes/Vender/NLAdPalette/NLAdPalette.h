@@ -13,18 +13,13 @@
 
 static const NSInteger kMaxColorNum = 16;
 
-typedef void(^GetColorBlock)(NLAdPaletteColorModel *recommendColor,NSDictionary *allModeColorDic,NSError *error);
+typedef void(^NLAdGetColorBlock)(NLAdPaletteColorModel *recommendColor,NSDictionary *allModeColorDic,NSError *error);
 
 @interface NLAdPalette : NSObject
 
-- (instancetype)initWithImage:(UIImage*)image;
+- (instancetype)initWithSourceImage:(UIImage*)image;
 
-- (void)startToAnalyzeImage:(GetColorBlock)block;
-
-//you can use '|' to separate every target mode ,eg :"DARK_VIBRANT_PALETTE | VIBRANT_PALETTE"
-//- (void)startToAnalyzeImage:(GetColorBlock)block forTargetMode:(NLAdPaletteTargetMode)mode;
-
-- (void)startToAnalyzeForTargetMode:(NLAdPaletteTargetMode)mode withCallBack:(GetColorBlock)block;
+- (void)startToAnalyzeForTargetMode:(NLAdPaletteTargetMode)mode withCallBack:(NLAdGetColorBlock)block;
 
 @end
 
@@ -32,6 +27,6 @@ typedef void(^GetColorBlock)(NLAdPaletteColorModel *recommendColor,NSDictionary 
 
 @interface NLAdVBox : NSObject
 
-- (NSInteger)getVolume;
+- (NSInteger)getBoxVolume;
 
 @end

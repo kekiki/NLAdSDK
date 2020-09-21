@@ -18,5 +18,6 @@
 #import "NLAdModelProtocol.h"
 #import "NLAdAttribute.h"
 #import "NLAdReadAdView.h"
+#import "NLAdLog.h"
 
 #endif /* NLAdSDK_h */

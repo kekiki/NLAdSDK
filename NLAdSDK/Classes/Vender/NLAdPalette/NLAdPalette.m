@@ -10,17 +10,17 @@
 #import "NLAdPaletteColorUtils.h"
 #import "NLAdPriorityBoxArray.h"
 
-typedef NS_ENUM(NSInteger,COMPONENT_COLOR){
-    COMPONENT_RED = 0,
-    COMPONENT_GREEN = 1,
-    COMPONENT_BLUE = 2
+typedef NS_ENUM(NSInteger,NLADSDK_COMPONENT_COLOR){
+    NLADSDK_COMPONENT_RED = 0,
+    NLADSDK_COMPONENT_GREEN = 1,
+    NLADSDK_COMPONENT_BLUE = 2
 };
 
-const NSInteger QUANTIZE_WORD_WIDTH = 5;
-const NSInteger QUANTIZE_WORD_MASK = (1 << QUANTIZE_WORD_WIDTH) - 1;
-const CGFloat resizeArea = 160 * 160;
+const NSInteger NLADSDK_QUANTIZE_WORD_WIDTH = 5;
+const NSInteger NLADSDK_QUANTIZE_WORD_MASK = (1 << NLADSDK_QUANTIZE_WORD_WIDTH) - 1;
+const CGFloat nladsdk_resizeArea = 160 * 160;
 
-int hist[32768];
+int nladsdk_hist[32768];
 
 @interface NLAdVBox()
 
@@ -62,7 +62,7 @@ int hist[32768];
     return self;
 }
 
-- (NSInteger)getVolume{
+- (NSInteger)getBoxVolume{
     NSInteger volume = (_maxRed - _minRed + 1) * (_maxGreen - _minGreen + 1) *
     (_maxBlue - _minBlue + 1);
     return volume;
@@ -107,7 +107,7 @@ int hist[32768];
     
     NSInteger midPoint = _population / 2;
     for (NSInteger i = _lowerIndex, count = 0; i <= _upperIndex; i++)  {
-        NSInteger population = hist[[_distinctColors[i] intValue]];
+        NSInteger population = nladsdk_hist[[_distinctColors[i] intValue]];
         count += population;
         if (count >= midPoint) {
             return i;
@@ -166,11 +166,11 @@ int hist[32768];
     NSInteger blueLength = _maxBlue - _minBlue;
     
     if (redLength >= greenLength && redLength >= blueLength) {
-        return COMPONENT_RED;
+        return NLADSDK_COMPONENT_RED;
     } else if (greenLength >= redLength && greenLength >= blueLength) {
-        return COMPONENT_GREEN;
+        return NLADSDK_COMPONENT_GREEN;
     } else {
-        return COMPONENT_BLUE;
+        return NLADSDK_COMPONENT_BLUE;
     }
 }
 
@@ -182,24 +182,24 @@ int hist[32768];
  */
 - (void) modifySignificantOctetWithDismension:(NSInteger)dimension lowerIndex:(NSInteger)lower upperIndex:(NSInteger)upper{
     switch (dimension) {
-        case COMPONENT_RED:
+        case NLADSDK_COMPONENT_RED:
             // Already in RGB, no need to do anything
             break;
-        case COMPONENT_GREEN:
+        case NLADSDK_COMPONENT_GREEN:
             // We need to do a RGB to GRB swap, or vice-versa
             for (NSInteger i = lower; i <= upper; i++) {
                 NSInteger color = [_distinctColors[i] intValue];
-                NSInteger newColor = [NLAdPaletteColorUtils quantizedGreen:color] << (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH)
-                | [NLAdPaletteColorUtils quantizedRed:color]  << QUANTIZE_WORD_WIDTH | [NLAdPaletteColorUtils quantizedBlue:color];
+                NSInteger newColor = [NLAdPaletteColorUtils quantizedGreen:color] << (NLADSDK_QUANTIZE_WORD_WIDTH + NLADSDK_QUANTIZE_WORD_WIDTH)
+                | [NLAdPaletteColorUtils quantizedRed:color]  << NLADSDK_QUANTIZE_WORD_WIDTH | [NLAdPaletteColorUtils quantizedBlue:color];
                 _distinctColors[i] = [NSNumber numberWithInteger:newColor];
             }
             break;
-        case COMPONENT_BLUE:
+        case NLADSDK_COMPONENT_BLUE:
             // We need to do a RGB to BGR swap, or vice-versa
             for (NSInteger i = lower; i <= upper; i++) {
                 NSInteger color = [_distinctColors[i] intValue];
-                NSInteger newColor =  [NLAdPaletteColorUtils quantizedBlue:color] << (QUANTIZE_WORD_WIDTH + QUANTIZE_WORD_WIDTH)
-                | [NLAdPaletteColorUtils quantizedGreen:color]  << QUANTIZE_WORD_WIDTH
+                NSInteger newColor =  [NLAdPaletteColorUtils quantizedBlue:color] << (NLADSDK_QUANTIZE_WORD_WIDTH + NLADSDK_QUANTIZE_WORD_WIDTH)
+                | [NLAdPaletteColorUtils quantizedGreen:color]  << NLADSDK_QUANTIZE_WORD_WIDTH
                 | [NLAdPaletteColorUtils quantizedRed:color];
                 _distinctColors[i] = [NSNumber numberWithInteger:newColor];
             }
@@ -218,7 +218,7 @@ int hist[32768];
     
     for (NSInteger i = _lowerIndex; i <= _upperIndex; i++) {
         NSInteger color = [_distinctColors[i] intValue];
-        NSInteger colorPopulation = hist[color];
+        NSInteger colorPopulation = nladsdk_hist[color];
         
         totalPopulation += colorPopulation;
         
@@ -236,9 +236,9 @@ int hist[32768];
     NSInteger greenMean = greenSum / totalPopulation;
     NSInteger blueMean = blueSum / totalPopulation;
     
-    redMean = [NLAdPaletteColorUtils modifyWordWidthWithValue:redMean currentWidth:QUANTIZE_WORD_WIDTH targetWidth:8];
-    greenMean = [NLAdPaletteColorUtils modifyWordWidthWithValue:greenMean currentWidth:QUANTIZE_WORD_WIDTH targetWidth:8];
-    blueMean = [NLAdPaletteColorUtils modifyWordWidthWithValue:blueMean currentWidth:QUANTIZE_WORD_WIDTH targetWidth:8];
+    redMean = [NLAdPaletteColorUtils modifyWordWidthWithValue:redMean currentWidth:NLADSDK_QUANTIZE_WORD_WIDTH targetWidth:8];
+    greenMean = [NLAdPaletteColorUtils modifyWordWidthWithValue:greenMean currentWidth:NLADSDK_QUANTIZE_WORD_WIDTH targetWidth:8];
+    blueMean = [NLAdPaletteColorUtils modifyWordWidthWithValue:blueMean currentWidth:NLADSDK_QUANTIZE_WORD_WIDTH targetWidth:8];
 
     NSInteger rgb888Color = redMean << 2 * 8 | greenMean << 8 | blueMean;
     
@@ -265,7 +265,7 @@ int hist[32768];
     
     for (NSInteger i = _lowerIndex; i <= _upperIndex; i++) {
         NSInteger color = [_distinctColors[i] intValue];
-        count += hist[color];
+        count += nladsdk_hist[color];
         
         NSInteger r = [NLAdPaletteColorUtils quantizedRed:color];
         NSInteger g =  [NLAdPaletteColorUtils quantizedGreen:color];
@@ -320,7 +320,7 @@ int hist[32768];
 @property (nonatomic,assign) NSInteger pixelCount;
 
 /** callback */
-@property (nonatomic,copy) GetColorBlock getColorBlock;
+@property (nonatomic,copy) NLAdGetColorBlock getColorBlock;
 
 /** specify mode */
 @property (nonatomic,assign) NLAdPaletteTargetMode mode;
@@ -332,7 +332,7 @@ int hist[32768];
 
 @implementation NLAdPalette
 
--(instancetype)initWithImage:(UIImage *)image{
+-(instancetype)initWithSourceImage:(UIImage *)image{
     self = [super init];
     if (self){
         _image = image;
@@ -342,11 +342,11 @@ int hist[32768];
 
 #pragma mark - Core code to analyze the main color of a image
 
-- (void)startToAnalyzeImage:(GetColorBlock)block{
-    [self startToAnalyzeForTargetMode:DEFAULT_NON_MODE_PALETTE withCallBack:block];
+- (void)startToAnalyzeImage:(NLAdGetColorBlock)block{
+    [self startToAnalyzeForTargetMode:NLADSDK_DEFAULT_NON_MODE_PALETTE withCallBack:block];
 }
 
-- (void)startToAnalyzeForTargetMode:(NLAdPaletteTargetMode)mode withCallBack:(GetColorBlock)block{
+- (void)startToAnalyzeForTargetMode:(NLAdPaletteTargetMode)mode withCallBack:(NLAdGetColorBlock)block{
     [self initTargetsWithMode:mode];
     
     //Check the image is nil or not
@@ -391,23 +391,23 @@ int hist[32768];
             blue  = (NSInteger)rawData[pixelIndex*4+2];
             
             //switch RGB888 to RGB555
-            red = [NLAdPaletteColorUtils modifyWordWidthWithValue:red currentWidth:8 targetWidth:QUANTIZE_WORD_WIDTH];
-            green = [NLAdPaletteColorUtils modifyWordWidthWithValue:green currentWidth:8 targetWidth:QUANTIZE_WORD_WIDTH];
-            blue = [NLAdPaletteColorUtils modifyWordWidthWithValue:blue currentWidth:8 targetWidth:QUANTIZE_WORD_WIDTH];
+            red = [NLAdPaletteColorUtils modifyWordWidthWithValue:red currentWidth:8 targetWidth:NLADSDK_QUANTIZE_WORD_WIDTH];
+            green = [NLAdPaletteColorUtils modifyWordWidthWithValue:green currentWidth:8 targetWidth:NLADSDK_QUANTIZE_WORD_WIDTH];
+            blue = [NLAdPaletteColorUtils modifyWordWidthWithValue:blue currentWidth:8 targetWidth:NLADSDK_QUANTIZE_WORD_WIDTH];
             
-            NSInteger quantizedColor = red << 2*QUANTIZE_WORD_WIDTH | green << QUANTIZE_WORD_WIDTH | blue;
-            hist [quantizedColor] ++;
+            NSInteger quantizedColor = red << 2*NLADSDK_QUANTIZE_WORD_WIDTH | green << NLADSDK_QUANTIZE_WORD_WIDTH | blue;
+            nladsdk_hist[quantizedColor] ++;
         }
         
         free(rawData);
         
         NSInteger distinctColorCount = 0;
-        NSInteger length = sizeof(hist)/sizeof(hist[0]);
+        NSInteger length = sizeof(nladsdk_hist)/sizeof(nladsdk_hist[0]);
         for (NSInteger color = 0 ; color < length ;color++){
-            if (hist[color] > 0 && [self shouldIgnoreColor:color]){
-                hist[color] = 0;
+            if (nladsdk_hist[color] > 0 && [self shouldIgnoreColor:color]){
+                nladsdk_hist[color] = 0;
             }
-            if (hist[color] > 0){
+            if (nladsdk_hist[color] > 0){
                 distinctColorCount ++;
             }
         }
@@ -415,7 +415,7 @@ int hist[32768];
         NSInteger distinctColorIndex = 0;
         _distinctColors = [[NSMutableArray alloc]init];
         for (NSInteger color = 0; color < length ;color++){
-            if (hist[color] > 0){
+            if (nladsdk_hist[color] > 0){
                 [_distinctColors addObject: [NSNumber numberWithInteger:color]];
                 distinctColorIndex++;
             }
@@ -428,15 +428,15 @@ int hist[32768];
             NSMutableArray *swatchs = [[NSMutableArray alloc]init];
             for (NSInteger i = 0;i < distinctColorCount ; i++){
                 NSInteger color = [_distinctColors[i] integerValue];
-                NSInteger population = hist[color];
+                NSInteger population = nladsdk_hist[color];
                 
                 NSInteger red = [NLAdPaletteColorUtils quantizedRed:color];
                 NSInteger green = [NLAdPaletteColorUtils quantizedGreen:color];
                 NSInteger blue = [NLAdPaletteColorUtils quantizedBlue:color];
                 
-                red = [NLAdPaletteColorUtils modifyWordWidthWithValue:red currentWidth:QUANTIZE_WORD_WIDTH targetWidth:8];
-                green = [NLAdPaletteColorUtils modifyWordWidthWithValue:green currentWidth:QUANTIZE_WORD_WIDTH targetWidth:8];
-                blue = [NLAdPaletteColorUtils modifyWordWidthWithValue:blue currentWidth:QUANTIZE_WORD_WIDTH targetWidth:8];
+                red = [NLAdPaletteColorUtils modifyWordWidthWithValue:red currentWidth:NLADSDK_QUANTIZE_WORD_WIDTH targetWidth:8];
+                green = [NLAdPaletteColorUtils modifyWordWidthWithValue:green currentWidth:NLADSDK_QUANTIZE_WORD_WIDTH targetWidth:8];
+                blue = [NLAdPaletteColorUtils modifyWordWidthWithValue:blue currentWidth:NLADSDK_QUANTIZE_WORD_WIDTH targetWidth:8];
                 
                 color = red << 2 * 8 | green << 8 | blue;
                 
@@ -541,8 +541,8 @@ int hist[32768];
     NSUInteger height = CGImageGetHeight(cgImage);
     double scaleRatio;
     CGFloat imageSize = width * height;
-    if (imageSize > resizeArea){
-        scaleRatio = resizeArea / ((double)imageSize);
+    if (imageSize > nladsdk_resizeArea){
+        scaleRatio = nladsdk_resizeArea / ((double)imageSize);
         CGSize scaleSize = CGSizeMake((CGFloat)(width * scaleRatio),(CGFloat)(height * scaleRatio));
         UIGraphicsBeginImageContext(scaleSize);
         [_image drawInRect:CGRectMake(0.0f, 0.0f, scaleSize.width, scaleSize.height)];
@@ -560,55 +560,55 @@ int hist[32768];
 - (void)initTargetsWithMode:(NLAdPaletteTargetMode)mode{
     NSMutableArray *targets = [[NSMutableArray alloc]init];
     
-    if (mode < VIBRANT_PALETTE || mode > ALL_MODE_PALETTE || mode == ALL_MODE_PALETTE){
+    if (mode < NLADSDK_VIBRANT_PALETTE || mode > NLADSDK_ALL_MODE_PALETTE || mode == NLADSDK_ALL_MODE_PALETTE){
         
-        NLAdPaletteTarget *vibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:VIBRANT_PALETTE];
+        NLAdPaletteTarget *vibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_VIBRANT_PALETTE];
         [targets addObject:vibrantTarget];
         
-        NLAdPaletteTarget *mutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:MUTED_PALETTE];
+        NLAdPaletteTarget *mutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_MUTED_PALETTE];
         [targets addObject:mutedTarget];
         
-        NLAdPaletteTarget *lightVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:LIGHT_VIBRANT_PALETTE];
+        NLAdPaletteTarget *lightVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_LIGHT_VIBRANT_PALETTE];
         [targets addObject:lightVibrantTarget];
         
-        NLAdPaletteTarget *lightMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:LIGHT_MUTED_PALETTE];
+        NLAdPaletteTarget *lightMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_LIGHT_MUTED_PALETTE];
         [targets addObject:lightMutedTarget];
 
-        NLAdPaletteTarget *darkVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:DARK_VIBRANT_PALETTE];
+        NLAdPaletteTarget *darkVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_DARK_VIBRANT_PALETTE];
         [targets addObject:darkVibrantTarget];
 
-        NLAdPaletteTarget *darkMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:DARK_MUTED_PALETTE];
+        NLAdPaletteTarget *darkMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_DARK_MUTED_PALETTE];
         [targets addObject:darkMutedTarget];
         
     }else{
         if (mode & (1 << 0)){
-            NLAdPaletteTarget *vibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:VIBRANT_PALETTE];
+            NLAdPaletteTarget *vibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_VIBRANT_PALETTE];
             [targets addObject:vibrantTarget];
         }
         if (mode & (1 << 1)){
-            NLAdPaletteTarget *lightVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:LIGHT_VIBRANT_PALETTE];
+            NLAdPaletteTarget *lightVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_LIGHT_VIBRANT_PALETTE];
             [targets addObject:lightVibrantTarget];
         }
         if (mode & (1 << 2)){
-            NLAdPaletteTarget *darkVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:DARK_VIBRANT_PALETTE];
+            NLAdPaletteTarget *darkVibrantTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_DARK_VIBRANT_PALETTE];
             [targets addObject:darkVibrantTarget];
         }
         if (mode & (1 << 3)){
-            NLAdPaletteTarget *lightMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:LIGHT_MUTED_PALETTE];
+            NLAdPaletteTarget *lightMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_LIGHT_MUTED_PALETTE];
             [targets addObject:lightMutedTarget];
         }
         if (mode & (1 << 4)){
-            NLAdPaletteTarget *mutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:MUTED_PALETTE];
+            NLAdPaletteTarget *mutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_MUTED_PALETTE];
             [targets addObject:mutedTarget];
         }
         if (mode & (1 << 5)){
-            NLAdPaletteTarget *darkMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:DARK_MUTED_PALETTE];
+            NLAdPaletteTarget *darkMutedTarget = [[NLAdPaletteTarget alloc]initWithTargetMode:NLADSDK_DARK_MUTED_PALETTE];
             [targets addObject:darkMutedTarget];
         }
     }
     _targetArray = [targets copy];
     
-    if (mode >= VIBRANT_PALETTE && mode <= ALL_MODE_PALETTE){
+    if (mode >= NLADSDK_VIBRANT_PALETTE && mode <= NLADSDK_ALL_MODE_PALETTE){
         _isNeedColorDic = YES;
     }
 }
@@ -617,7 +617,7 @@ int hist[32768];
 
 - (void)clearHistArray{
     for (NSInteger i = 0;i<32768;i++){
-        hist[i] = 0;
+        nladsdk_hist[i] = 0;
     }
 }
 

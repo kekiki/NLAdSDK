@@ -9,6 +9,7 @@
 #import "NLGoogleAdReadView.h"
 #import "NLAdAttribute.h"
 #import <YYCategories/YYCategories.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @implementation NLGoogleAdReadView
 
@@ -46,7 +47,7 @@
                                                  forState:UIControlStateNormal];
     nativeAdView.callToActionView.hidden = nativeAd.callToAction ? NO : YES;
 
-    [((UIImageView *)nativeAdView.iconView) setImage:nativeAd.icon.image];
+    [((UIImageView *)nativeAdView.iconView) sd_setImageWithURL:nativeAd.icon.imageURL];
     nativeAdView.iconView.hidden = nativeAd.icon ? NO : YES;
 
     ((UILabel *)nativeAdView.bodyView).text = nativeAd.body;

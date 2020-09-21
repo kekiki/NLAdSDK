@@ -8,22 +8,22 @@
 
 #import "NLAdPaletteColorUtils.h"
 
-const NSInteger QUANTIZE_WORD_WIDTH_COLOR = 5;
-const NSInteger QUANTIZE_WORD_MASK_COLOR = (1 << QUANTIZE_WORD_WIDTH_COLOR) - 1;
+const NSInteger NLADSDK_QUANTIZE_WORD_WIDTH_COLOR = 5;
+const NSInteger NLADSDK_QUANTIZE_WORD_MASK_COLOR = (1 << NLADSDK_QUANTIZE_WORD_WIDTH_COLOR) - 1;
 
 @implementation NLAdPaletteColorUtils
 + (NSInteger)quantizedRed:(NSInteger)color{
-    NSInteger red =  (color >> (QUANTIZE_WORD_WIDTH_COLOR + QUANTIZE_WORD_WIDTH_COLOR)) & QUANTIZE_WORD_MASK_COLOR;
+    NSInteger red =  (color >> (NLADSDK_QUANTIZE_WORD_WIDTH_COLOR + NLADSDK_QUANTIZE_WORD_WIDTH_COLOR)) & NLADSDK_QUANTIZE_WORD_MASK_COLOR;
     return red;
 }
 
 + (NSInteger)quantizedGreen:(NSInteger)color{
-    NSInteger green = (color >> QUANTIZE_WORD_WIDTH_COLOR) & QUANTIZE_WORD_MASK_COLOR;
+    NSInteger green = (color >> NLADSDK_QUANTIZE_WORD_WIDTH_COLOR) & NLADSDK_QUANTIZE_WORD_MASK_COLOR;
     return green;
 }
 
 + (NSInteger)quantizedBlue:(NSInteger)color{
-    NSInteger blue = color & QUANTIZE_WORD_MASK_COLOR;
+    NSInteger blue = color & NLADSDK_QUANTIZE_WORD_MASK_COLOR;
     return blue;
 }
 

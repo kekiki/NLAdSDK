@@ -78,11 +78,11 @@
     if (h<0.0F){
         h += 360.0F;
     }
-    NSArray *hsl = @[[NSNumber numberWithFloat:constrain(h, 0.0F, 360.0F)],[NSNumber numberWithFloat:constrain(s, 0.0F, 1.0F)],[NSNumber numberWithFloat:constrain(l, 0.0F, 1.0F)]];
+    NSArray *hsl = @[[NSNumber numberWithFloat:nladsdk_constrain(h, 0.0F, 360.0F)],[NSNumber numberWithFloat:nladsdk_constrain(s, 0.0F, 1.0F)],[NSNumber numberWithFloat:nladsdk_constrain(l, 0.0F, 1.0F)]];
     return hsl;
 }
 
-float constrain(float amount,float low,float high){
+float nladsdk_constrain(float amount,float low,float high){
     return amount > high ? high : amount < low ? low : amount;
 }
 

@@ -10,13 +10,13 @@
 
 @implementation UIImage (NLAdPalette)
 
-- (void)getPaletteImageColor:(GetColorBlock)block{
-    [self getPaletteImageColorWithMode:DEFAULT_NON_MODE_PALETTE withCallBack:block];
+- (void)getPaletteImageColor:(NLAdGetColorBlock)block{
+    [self getPaletteImageColorWithMode:NLADSDK_DEFAULT_NON_MODE_PALETTE withCallBack:block];
     
 }
 
-- (void)getPaletteImageColorWithMode:(NLAdPaletteTargetMode)mode withCallBack:(GetColorBlock)block{
-    NLAdPalette *palette = [[NLAdPalette alloc]initWithImage:self];
+- (void)getPaletteImageColorWithMode:(NLAdPaletteTargetMode)mode withCallBack:(NLAdGetColorBlock)block{
+    NLAdPalette *palette = [[NLAdPalette alloc]initWithSourceImage:self];
     [palette startToAnalyzeForTargetMode:mode withCallBack:block];
 }
 

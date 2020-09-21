@@ -7,12 +7,11 @@
 //
 
 #import "NLFacebookAdSplashView.h"
-#import "UIView+Gradient.h"
-#import "Palette.h"
-#import "MLUtils.h"
-#import "UIImage+Add.h"
+#import "NLAdPalette.h"
+#import "UIImage+NLAdSDK.h"
 #import "NLAdAttribute.h"
 #import <YYCategories/YYCategories.h>
+#import "UIView+NLAdSDK.h"
 
 @import FBAudienceNetwork;
 
@@ -41,7 +40,7 @@
         // Fallback on earlier versions
         self.coverBgConstraints.constant = 0;
     }
-    self.bodyView.textColor = UIColorHexStr(@"#222222");
+    self.bodyView.textColor = [UIColor colorWithHexString:@"#222222"];
     self.iconView.layer.cornerRadius = 12.0;
     self.iconView.layer.masksToBounds = true;
     self.iconView.layer.borderColor = UIColor.whiteColor.CGColor;
@@ -67,9 +66,9 @@
         self.mediaView.contentMode = UIViewContentModeScaleAspectFill;
         
         UIImage *coverImage = self.mediaView.snapshotImage;
-        Palette *palette = [[Palette alloc] initWithImage:coverImage];
-        [palette startToAnalyzeForTargetMode:MUTED_PALETTE withCallBack:^(PaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
-            UIColor *color = UIColorHexStr(recommendColor.imageColorString);
+        NLAdPalette *palette = [[NLAdPalette alloc] initWithSourceImage:coverImage];
+        [palette startToAnalyzeForTargetMode:NLADSDK_MUTED_PALETTE withCallBack:^(NLAdPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
+            UIColor *color = [UIColor colorWithHexString:recommendColor.imageColorString];
             if (!recommendColor.imageColorString) {
                 color = [coverImage mostColor];
                 color = [color colorByChangeHue:0 saturation:0 brightness:-0.2 alpha:0];

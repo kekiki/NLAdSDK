@@ -10,6 +10,7 @@
 #import "NLAdAttribute.h"
 #import <YYCategories/YYCategories.h>
 
+
 @implementation NLGoogleAdBannerView
 
 - (void)layoutSubviews {

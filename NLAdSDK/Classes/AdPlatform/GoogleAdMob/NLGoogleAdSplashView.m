@@ -7,12 +7,12 @@
 //
 
 #import "NLGoogleAdSplashView.h"
-#import "UIView+Gradient.h"
-#import "Palette.h"
-#import "MLUtils.h"
-#import "UIImage+Add.h"
+#import "NLAdPalette.h"
+#import "UIImage+NLAdSDK.h"
 #import "NLAdAttribute.h"
+#import "UIView+NLAdSDK.h"
 #import <YYCategories/YYCategories.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface NLGoogleAdSplashView ()
 @property (weak, nonatomic) IBOutlet UIImageView *coverImageView;
@@ -32,7 +32,7 @@
         self.coverBgConstraints.constant = 0;
     }
 
-    ((UILabel *)self.bodyView).textColor = UIColorHexStr(@"#222222");
+    ((UILabel *)self.bodyView).textColor = [UIColor colorWithHexString:@"#222222"];
     self.iconView.layer.cornerRadius = 12.0;
     self.iconView.layer.masksToBounds = true;
     self.iconView.layer.borderColor = UIColor.whiteColor.CGColor;
@@ -59,21 +59,25 @@
                                                  forState:UIControlStateNormal];
     nativeAdView.callToActionView.hidden = nativeAd.callToAction ? NO : YES;
 
-    [((UIImageView *)nativeAdView.iconView) setImage:nativeAd.icon.image];
+    [((UIImageView *)nativeAdView.iconView) sd_setImageWithURL:nativeAd.icon.imageURL];
     nativeAdView.iconView.hidden = nativeAd.icon ? NO : YES;
 
     nativeAdView.imageView.hidden = true;
     
     UIImage *coverImage = nativeAdView.mediaView.snapshotImage;
-    Palette *palette = [[Palette alloc] initWithImage:coverImage];
-    [palette startToAnalyzeForTargetMode:MUTED_PALETTE withCallBack:^(PaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
-        UIColor *color = UIColorHexStr(recommendColor.imageColorString);
+    NLAdPalette *palette = [[NLAdPalette alloc] initWithSourceImage:coverImage];
+    [palette startToAnalyzeForTargetMode:NLADSDK_MUTED_PALETTE withCallBack:^(NLAdPaletteColorModel *recommendColor, NSDictionary *allModeColorDic, NSError *error) {
+        UIColor *color = [UIColor colorWithHexString:recommendColor.imageColorString];
         if (!recommendColor.imageColorString) {
             color = [coverImage mostColor];
             color = [color colorByChangeHue:0 saturation:0 brightness:-0.2 alpha:0];
         }
         [self setCoverColor:color];
     }];
+}
+
+- (void)setAdConfig:(NLAdAttribute *)config {
+    if (!config) { return; }
 }
 
 - (void)setCoverColor:(UIColor *)coverColor {
@@ -83,10 +87,6 @@
     [self.coverImageView setGradientBackgroundWithColors:@[coverColor, endColor] locations:nil startPoint:start endPoint:end];
     
     [self.callToActionView setGradientBackgroundWithColors:@[coverColor, endColor] locations:@[@0, @1.0] startPoint:CGPointMake(0, 0.5) endPoint:CGPointMake(1, 0.76)];
-}
-
-- (void)setAdConfig:(NLAdAttribute *)config {
-    if (!config) { return; }
 }
 
 @end
