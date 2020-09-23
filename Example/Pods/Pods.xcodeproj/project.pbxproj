@@ -467,6 +467,12 @@
 		EA2C95B42517A2110015F7BF /* UIImage+NLAdSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = EA2C95B22517A2110015F7BF /* UIImage+NLAdSDK.m */; };
 		EA2C95B72517A2B10015F7BF /* UIView+NLAdSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = EA2C95B52517A2B10015F7BF /* UIView+NLAdSDK.h */; };
 		EA2C95B82517A2B10015F7BF /* UIView+NLAdSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = EA2C95B62517A2B10015F7BF /* UIView+NLAdSDK.m */; };
+		EA87A86B251B340400BF1732 /* NLAppLovinAdLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EA87A863251B340300BF1732 /* NLAppLovinAdLoader.m */; };
+		EA87A86C251B340400BF1732 /* NLAppLovinAdLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = EA87A864251B340300BF1732 /* NLAppLovinAdLoader.h */; };
+		EA87A86D251B340400BF1732 /* NLVungleAdLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = EA87A866251B340300BF1732 /* NLVungleAdLoader.h */; };
+		EA87A86E251B340400BF1732 /* NLVungleAdLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EA87A867251B340300BF1732 /* NLVungleAdLoader.m */; };
+		EA87A86F251B340400BF1732 /* NLChartBoostAdLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = EA87A869251B340400BF1732 /* NLChartBoostAdLoader.m */; };
+		EA87A870251B340400BF1732 /* NLChartBoostAdLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = EA87A86A251B340400BF1732 /* NLChartBoostAdLoader.h */; };
 		EAD01C24607057C5BA8754D8193FDD50 /* FBLPromise+Always.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E64A521DE455F8630B375051B50FC92 /* FBLPromise+Always.m */; };
 		EB0E4C3025C9DDE6C0C1CBF779A57A5B /* SDWebImageDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = BD409E0F07ADC1C513244EA9DA8C5C4D /* SDWebImageDownloader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		EBE75EDF1128E1B13871AA55B6FF41FC /* SDAssociatedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E95C2C4D7B51E28A724B7114E0B376A /* SDAssociatedObject.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -1170,6 +1176,12 @@
 		EA2C95B52517A2B10015F7BF /* UIView+NLAdSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIView+NLAdSDK.h"; sourceTree = "<group>"; };
 		EA2C95B62517A2B10015F7BF /* UIView+NLAdSDK.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIView+NLAdSDK.m"; sourceTree = "<group>"; };
 		EA5CC45C31E420E604CFC00630FD1B3A /* FBNativeAdCollectionViewCellProvider.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBNativeAdCollectionViewCellProvider.h; path = Static/FBAudienceNetwork.framework/Headers/FBNativeAdCollectionViewCellProvider.h; sourceTree = "<group>"; };
+		EA87A863251B340300BF1732 /* NLAppLovinAdLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NLAppLovinAdLoader.m; sourceTree = "<group>"; };
+		EA87A864251B340300BF1732 /* NLAppLovinAdLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NLAppLovinAdLoader.h; sourceTree = "<group>"; };
+		EA87A866251B340300BF1732 /* NLVungleAdLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NLVungleAdLoader.h; sourceTree = "<group>"; };
+		EA87A867251B340300BF1732 /* NLVungleAdLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NLVungleAdLoader.m; sourceTree = "<group>"; };
+		EA87A869251B340400BF1732 /* NLChartBoostAdLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NLChartBoostAdLoader.m; sourceTree = "<group>"; };
+		EA87A86A251B340400BF1732 /* NLChartBoostAdLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NLChartBoostAdLoader.h; sourceTree = "<group>"; };
 		EB2DFAA9ED0CF4DCFF281F176F8E4557 /* NLAdSDK-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NLAdSDK-umbrella.h"; sourceTree = "<group>"; };
 		EB504506BDC505CF43C0A9B3AAF694B2 /* UIImage+MemoryCacheCost.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+MemoryCacheCost.m"; path = "SDWebImage/Core/UIImage+MemoryCacheCost.m"; sourceTree = "<group>"; };
 		EBABE58DC89C77AC348E3EF54FBEAABA /* NlAdPaletteSwatch.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = NlAdPaletteSwatch.h; sourceTree = "<group>"; };
@@ -1488,6 +1500,9 @@
 				A97C33AEB4904386E1E553631D2DEB04 /* NLPlatformAdLoaderDelegate.h */,
 				21C5B64A35034C3421C5522688064D42 /* NLReadAdObject.h */,
 				D5AE49CA0F76AF0ECC533C89DE083B0E /* NLReadAdObject.m */,
+				EA87A862251B340300BF1732 /* AppLovin */,
+				EA87A868251B340300BF1732 /* ChartBoost */,
+				EA87A865251B340300BF1732 /* Vungle */,
 				A08DAA0EE00D22698466AA1416C6BB15 /* FacebookAd */,
 				B3C0087A313188B79E744AB5CF1317D2 /* GoogleAdMob */,
 			);
@@ -2024,6 +2039,33 @@
 			path = NLAdCategory;
 			sourceTree = "<group>";
 		};
+		EA87A862251B340300BF1732 /* AppLovin */ = {
+			isa = PBXGroup;
+			children = (
+				EA87A863251B340300BF1732 /* NLAppLovinAdLoader.m */,
+				EA87A864251B340300BF1732 /* NLAppLovinAdLoader.h */,
+			);
+			path = AppLovin;
+			sourceTree = "<group>";
+		};
+		EA87A865251B340300BF1732 /* Vungle */ = {
+			isa = PBXGroup;
+			children = (
+				EA87A866251B340300BF1732 /* NLVungleAdLoader.h */,
+				EA87A867251B340300BF1732 /* NLVungleAdLoader.m */,
+			);
+			path = Vungle;
+			sourceTree = "<group>";
+		};
+		EA87A868251B340300BF1732 /* ChartBoost */ = {
+			isa = PBXGroup;
+			children = (
+				EA87A869251B340400BF1732 /* NLChartBoostAdLoader.m */,
+				EA87A86A251B340400BF1732 /* NLChartBoostAdLoader.h */,
+			);
+			path = ChartBoost;
+			sourceTree = "<group>";
+		};
 		EBA041AF487931ED7729A46FB9762028 /* GoogleUtilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -2521,6 +2563,7 @@
 				D14374F5F0D052C0CAEACDEB865059C7 /* NLAdManager+ReadAd.h in Headers */,
 				87880971952FF37B86AC64CAF7F5E191 /* NLAdManager+RewardAd.h in Headers */,
 				7849085FA816DEFA496B44A3B6FC8775 /* NLAdManager.h in Headers */,
+				EA87A870251B340400BF1732 /* NLChartBoostAdLoader.h in Headers */,
 				25938A948BF80BC8CB157A2CE668A3AB /* NLAdSDK-umbrella.h in Headers */,
 				FACB0A4AAB9482692B7A5B6111C86D07 /* NLAdModelProtocol.h in Headers */,
 				61371B0D249A4654161983685EB978FB /* NLAdReadAdView.h in Headers */,
@@ -2542,12 +2585,14 @@
 				E70A609020505A1777B1F7C6689FB858 /* NLGoogleAdSplashView.h in Headers */,
 				93B804F73FC773161574163342B1788E /* NLGoogleNativeAdView.h in Headers */,
 				F887E22E31E54A695525BA286F922025 /* NLAdPalette.h in Headers */,
+				EA87A86C251B340400BF1732 /* NLAppLovinAdLoader.h in Headers */,
 				CB05E0A1CE43C758960FAB155372D203 /* NLAdPaletteColorModel.h in Headers */,
 				C76E6A2B3AD4DAAE257764437D236CF0 /* NLAdPaletteColorUtils.h in Headers */,
 				9146DDDCBE3839848F5BC3FCC44A02D0 /* NlAdPaletteSwatch.h in Headers */,
 				50DCE5603350FCEEF6FB480AE7432BFE /* NLAdPaletteTarget.h in Headers */,
 				4DD1DB410B6DEFE72A99CE281C7C2CE0 /* NLAdPriorityBoxArray.h in Headers */,
 				41C3C20A075BACD892527E64CDBF5869 /* UIImage+NLAdPalette.h in Headers */,
+				EA87A86D251B340400BF1732 /* NLVungleAdLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2971,10 +3016,13 @@
 				3C8CED0B8CA7A499F8C9B2AA974EDAE4 /* NLGoogleAdBannerView.xib in Sources */,
 				7397EC2537AD2A60C6F10615717EF5DF /* NLGoogleAdLoader.m in Sources */,
 				30114350F106B3E61C3FDD56A4D124B7 /* NLGoogleAdReadView.m in Sources */,
+				EA87A86F251B340400BF1732 /* NLChartBoostAdLoader.m in Sources */,
 				310FC9DF08A9757B31D2D44FC2EAC63C /* NLGoogleAdReadView.xib in Sources */,
 				B270F837CE7FD2B8ED5157935A2B2ABC /* NLGoogleAdSplashView.m in Sources */,
 				ADCC49B15E03D248764177213CC765A1 /* NLGoogleAdSplashView.xib in Sources */,
 				68FB80B5F1ADB6812AE79BBD1F40CA53 /* NLGoogleNativeAdView.m in Sources */,
+				EA87A86E251B340400BF1732 /* NLVungleAdLoader.m in Sources */,
+				EA87A86B251B340400BF1732 /* NLAppLovinAdLoader.m in Sources */,
 				12C835C7932A0B2A5F39F439C71428F8 /* NLPlatformAdLoaderConfig.m in Sources */,
 				A2028AB60EA3FBE4ECDEBF3B5192DC54 /* NLReadAdObject.m in Sources */,
 				E42B428FB2F80DB1FF79AD27EF38147F /* NLAdPalette.m in Sources */,
