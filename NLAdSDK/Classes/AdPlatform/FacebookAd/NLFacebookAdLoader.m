@@ -242,6 +242,12 @@
 }
 
 - (BOOL)hasAdWithPlaceCode:(NLAdPlaceCode)placeCode {
+    if (placeCode == NLAdPlaceCodeNativeNovelRead
+        || placeCode == NLAdPlaceCodeNativeComicRead) {
+        NSObject *object = [self.adObjectDict objectForKey:@(placeCode).stringValue];
+        return object != nil;
+    }
+    
     UIView *adView = [self.adViewDict objectForKey:@(placeCode).stringValue];
     return adView != nil;
 }
