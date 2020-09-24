@@ -13,6 +13,10 @@
 typedef NS_ENUM(NSInteger, NLAdPlatform) {
     NLAdPlatformAdmob = 1,          //Google AdMob
     NLAdPlatformFacebook = 2,       //Facebook
+    NLAdPlatformVungle = 3,         //Vungle
+    NLAdPlatformAppLovin = 4,       //AppLovin
+    NLAdPlatformChartBoost = 5,     //ChartBoost
+    NLAdPlatformMoPub = 111,       //MoPub
 };
 
 /**

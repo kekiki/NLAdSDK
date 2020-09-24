@@ -28,6 +28,7 @@
 
 // 激励
 @property (nonatomic, strong) NSMutableDictionary<NSString *, FBRewardedVideoAd *> *rewardAdObjectDict;
+@property (nonatomic, strong) FBRewardedVideoAd *playingRewardAd;
 
 @end
 
@@ -213,7 +214,6 @@
 - (void)rewardedVideoAdVideoComplete:(FBRewardedVideoAd *)rewardedVideoAd {
     NSLog(@"rewardedVideoAdVideoComplete");
     [self showApplicationStatusBar];
-    [self.rewardAdObjectDict removeObjectForKey:rewardedVideoAd.placementID];
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:userDidEarnRewardWithPlaceCode:placeId:)]) {
         NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedVideoAd];
         [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:placeCode placeId:rewardedVideoAd.placementID];
@@ -305,9 +305,10 @@
     if (rewardedAdObject != nil) {
         if (rewardedAdObject.isAdValid) {
             successed = [rewardedAdObject showAdFromRootViewController:viewController];
+            self.playingRewardAd = rewardedAdObject;
+            [self.rewardAdObjectDict removeObjectForKey:placeId];
         } else {
             NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:-1 userInfo:nil];
-            [self.rewardAdObjectDict removeObjectForKey:placeId];
             [self showRewardAdFailedWithError:error placeCode:placeCode placeId:placeId];
         }
     }

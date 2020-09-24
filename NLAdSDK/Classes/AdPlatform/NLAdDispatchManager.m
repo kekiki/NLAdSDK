@@ -257,12 +257,13 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
     }
     
     if (error != nil) {
+        [self.adLoadFailedSet addObject:placeId];
         [self.adAdapter switchToNextWithCode:placeCode];
-        if (!placeId || [self.adLoadFailedSet containsObject:placeId]) {
+        NSString *pid = [self.adAdapter placeIdWithCode:placeCode];
+        if (!pid || [self.adLoadFailedSet containsObject:pid]) {
             return;
         }
-        [self.adLoadFailedSet addObject:placeId];
-        [self loadNativeAdWithPlaceCode:placeCode completion:nil];
+        [self loadNativeAdWithPlaceCode:pid completion:nil];
     } else {
         [self.adLoadFailedSet removeObject:placeId];
     }
@@ -310,17 +311,28 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
 }
 
 - (void)adLoader:(nonnull id<NLPlatformAdLoaderProtocol>)manager userDidEarnRewardWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(nonnull NSString *)placeId {
-    @weakify(self);
-    [self.rewardAdViewController.presentedViewController dismissViewControllerAnimated:YES completion:^{
-        @strongify(self);
-        self.rewardAdIsPlaying = NO;
-        void(^rewardAdEarnReward)(NSError *) = [self.rewardAdEarnRewardDict objectForKey:placeId];
-        if (rewardAdEarnReward) { rewardAdEarnReward(nil); }
-        if ([self.rewardAdEarnRewardDict.allKeys containsObject:placeId]) {
-            [self.rewardAdEarnRewardDict removeObjectForKey:placeId];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @weakify(self);
+        if (self.rewardAdViewController.presentedViewController) {
+            [self.rewardAdViewController.presentedViewController dismissViewControllerAnimated:YES completion:^{
+                @strongify(self);
+                [self dismissAndRewardWithPlaceCode:placeCode placeId:placeId];
+            }];
+        } else {
+            [self dismissAndRewardWithPlaceCode:placeCode placeId:placeId];
         }
-        [self loadRewardAdWithPlaceCode:placeCode completion:nil];
-    }];
+       
+    });
+}
+
+- (void)dismissAndRewardWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(nonnull NSString *)placeId {
+    self.rewardAdIsPlaying = NO;
+    void(^rewardAdEarnReward)(NSError *) = [self.rewardAdEarnRewardDict objectForKey:placeId];
+    if (rewardAdEarnReward) { rewardAdEarnReward(nil); }
+    if ([self.rewardAdEarnRewardDict.allKeys containsObject:placeId]) {
+        [self.rewardAdEarnRewardDict removeObjectForKey:placeId];
+    }
+    [self loadRewardAdWithPlaceCode:placeCode completion:nil];
 }
 
 - (BOOL)isRewardAdPlaying {

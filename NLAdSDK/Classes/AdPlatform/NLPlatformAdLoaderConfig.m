@@ -10,6 +10,10 @@
 #import "NLAdDefines.h"
 #import "NLFacebookAdLoader.h"
 #import "NLGoogleAdLoader.h"
+//#import "NLMoPubAdLoader.h"
+#import "NLVungleAdLoader.h"
+#import "NLAppLovinAdLoader.h"
+#import "NLChartBoostAdLoader.h"
 
 // 配置阅读底部广告自动刷新间隔时间，秒为单位
 NSTimeInterval const kReadBottomAdRefreshTime = 10;
@@ -21,6 +25,9 @@ NSTimeInterval const kReadBottomAdRefreshTime = 10;
     return @{
         @(NLAdPlatformAdmob): [NLGoogleAdLoader sharedLoader],
         @(NLAdPlatformFacebook): [NLFacebookAdLoader sharedLoader],
+        @(NLAdPlatformVungle): [NLVungleAdLoader sharedLoader],
+        @(NLAdPlatformAppLovin): [NLAppLovinAdLoader sharedLoader],
+        @(NLAdPlatformChartBoost): [NLChartBoostAdLoader sharedLoader],
     };
 }
 

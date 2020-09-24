@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NLAdSDK'
-  s.version          = '0.1.1'
+  s.version          = '0.1.3'
   s.summary          = '聚合广告SDK'
 
   s.description      = <<-DESC
@@ -42,5 +42,9 @@ Pod::Spec.new do |s|
   s.dependency 'YYCategories'
   s.dependency 'Google-Mobile-Ads-SDK', '7.62.0'
   s.dependency 'GoogleMobileAdsMediationFacebook', '~> 5.10'
+  s.dependency "VungleSDK-iOS", "6.8.0"
+  s.dependency 'AppLovinSDK', "6.14.3"
+  s.dependency 'ChartboostSDK', '8.3.1'
+  s.dependency 'Bytedance-UnionAD', '~> 3.2.6.2'
   
 end

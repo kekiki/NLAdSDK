@@ -30,6 +30,7 @@
 // 激励
 @property (nonatomic, strong) NSMutableDictionary<NSString *, GADRewardedAd *> *rewardAdPortraitDict;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, GADRewardedAd *> *rewardAdLandscapeDict;
+@property (nonatomic, strong) GADRewardedAd *playingRewardAd;
 
 @end
 
@@ -242,7 +243,6 @@
 }
 
 - (void)userDidEarnRewardWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
-    [self.rewardAdObjectDict removeObjectForKey:placeId];
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:userDidEarnRewardWithPlaceCode:placeId:)]) {
         [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:placeCode placeId:placeId];
     }
@@ -376,10 +376,11 @@
         NSError *error = nil;
         if (rewardedAdObject.ready && [rewardedAdObject canPresentFromRootViewController:viewController error:&error]) {
             [rewardedAdObject presentFromRootViewController:viewController delegate:self];
+            self.playingRewardAd = rewardedAdObject;
+            [self.rewardAdObjectDict removeObjectForKey:placeId];
             successed = YES;
         } else {
             [self showRewardAdFailedWithError:error placeCode:placeCode placeId:placeId];
-            [self.rewardAdObjectDict removeObjectForKey:placeId];
         }
     }
     return successed;
