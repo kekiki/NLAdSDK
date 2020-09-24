@@ -307,6 +307,7 @@
             successed = [rewardedAdObject showAdFromRootViewController:viewController];
             self.playingRewardAd = rewardedAdObject;
             [self.rewardAdObjectDict removeObjectForKey:placeId];
+            [self loadRewardAdWithPlaceCode:placeCode placeId:placeId];
         } else {
             NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:-1 userInfo:nil];
             [self showRewardAdFailedWithError:error placeCode:placeCode placeId:placeId];

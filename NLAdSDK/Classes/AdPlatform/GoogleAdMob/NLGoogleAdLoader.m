@@ -378,6 +378,7 @@
             [rewardedAdObject presentFromRootViewController:viewController delegate:self];
             self.playingRewardAd = rewardedAdObject;
             [self.rewardAdObjectDict removeObjectForKey:placeId];
+            [self loadRewardAdWithPlaceCode:placeCode placeId:placeId];
             successed = YES;
         } else {
             [self showRewardAdFailedWithError:error placeCode:placeCode placeId:placeId];

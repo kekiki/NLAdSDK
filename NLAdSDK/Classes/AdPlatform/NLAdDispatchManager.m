@@ -332,7 +332,6 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
     if ([self.rewardAdEarnRewardDict.allKeys containsObject:placeId]) {
         [self.rewardAdEarnRewardDict removeObjectForKey:placeId];
     }
-    [self loadRewardAdWithPlaceCode:placeCode completion:nil];
 }
 
 - (BOOL)isRewardAdPlaying {
