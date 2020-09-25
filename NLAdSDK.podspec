@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'NLAdSDK'
-  s.version          = '0.1.4'
+  s.version          = '0.1.5'
   s.summary          = '聚合广告SDK'
 
   s.description      = <<-DESC

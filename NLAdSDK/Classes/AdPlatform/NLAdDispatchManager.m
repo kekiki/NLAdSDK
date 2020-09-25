@@ -12,6 +12,7 @@
 #import "NLPlatformAdLoaderConfig.h"
 #import "NLAdAttribute.h"
 #import <YYCategories/YYCategories.h>
+#import "NLAdLog.h"
 
 static NSInteger const kReadBottomAdViewTag = 1001;
 static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
@@ -30,6 +31,7 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
 @property (nonatomic, strong) NSMutableDictionary *rewardAdEarnRewardDict;
 @property (nonatomic, strong) NSMutableSet *adRewardPlaceIdLoadingSet;
 @property (nonatomic, weak) UIViewController *rewardAdViewController;
+@property (nonatomic, assign) NSInteger rewardAdCount;
 
 @end
 
@@ -121,7 +123,9 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
     }
     id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode];
     NSString *placeId = [self.adAdapter placeIdWithCode:placeCode];
-    [adLoader loadAdWithPlaceCode:placeCode placeId:placeId];
+    if (![adLoader hasRewardAdWithPlaceCode:placeCode placeId:placeId]) {
+        [adLoader loadAdWithPlaceCode:placeCode placeId:placeId];
+    }
 }
 
 - (BOOL)hasNativeAdViewWithPlaceCode:(NLAdPlaceCode)placeCode {
@@ -136,6 +140,40 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
 - (BOOL)isReadBottomNativeAdWithPlaceCode:(NLAdPlaceCode)placeCode {
     return placeCode == NLAdPlaceCodeNativeNovelBottom
     || placeCode == NLAdPlaceCodeNativeComicBottom;
+}
+
+- (BOOL)needShowReadBottomAdView {
+    if (self.readBottomAdContainerView.superview != nil) {
+        UIImageView *placeholderView = [self.readBottomAdContainerView viewWithTag:kReadBottomAdPlaceholderViewTag];
+        if (self.readBottomAdContainerView.subviews.count == 0 ||
+            (placeholderView != nil && self.readBottomAdContainerView.subviews.count == 1)) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
+- (void)showReadBottomAdViewIfNeededWithPlaceCode:(NLAdPlaceCode)placeCode {
+    if ([self isReadBottomNativeAdWithPlaceCode:placeCode] && [self needShowReadBottomAdView]) {
+        if ([self.readBottomAdTimer isValid]) {
+            [self.readBottomAdTimer invalidate];
+            self.readBottomAdTimer = nil;
+            
+            for (UIView *subView in self.readBottomAdContainerView.subviews) {
+                [subView removeFromSuperview];
+            }
+            id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode];
+            UIView *bottomAdView = [adLoader adViewWithPlaceCode:placeCode];
+            bottomAdView.frame = self.readBottomAdContainerView.bounds;
+            bottomAdView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+            bottomAdView.tag = kReadBottomAdViewTag;
+            [self.readBottomAdContainerView addSubview:bottomAdView];
+            
+            //自动更换
+            self.readBottomAdTimer = [NSTimer timerWithTimeInterval:kReadBottomAdRefreshTime target:self selector:@selector(startAutoChangeReadBottomAdWithPlaceCode:) userInfo:@{@"placeCode": @(placeCode)} repeats:YES];
+            [[NSRunLoop currentRunLoop] addTimer:self.readBottomAdTimer forMode:NSRunLoopCommonModes];
+        }
+    }
 }
 
 - (UIView *)nativeAdViewWithPlaceCode:(NLAdPlaceCode)placeCode {
@@ -181,8 +219,15 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
 }
 
 - (void)setNativeAdAttributes:(NLAdAttribute *)attributes placeCode:(NLAdPlaceCode)placeCode {
-    id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode];
-    [adLoader setAdAttributes:attributes placeCode:placeCode];
+    
+    NSArray *list = [self.adAdapter listOfCode:placeCode];
+    for (id<NLAdPlatformModelProtocol> model in list) {
+        id<NLPlatformAdLoaderProtocol> adLoader = [[NLPlatformAdLoaderConfig adLoaderList] objectForKey:@(model.platformType)];
+        if ([adLoader respondsToSelector:@selector(setAdAttributes:placeCode:)]) {
+            [adLoader setAdAttributes:attributes placeCode:placeCode];
+        }
+    }
+    
     if ([self isReadBottomNativeAdWithPlaceCode:placeCode]) {
         if (attributes.placeholderImage != nil) {
             UIImageView *placeholderView = [self.readBottomAdContainerView viewWithTag:kReadBottomAdPlaceholderViewTag];
@@ -216,7 +261,7 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
 
     id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode.integerValue];
     UIView *topView = [adLoader adViewWithPlaceCode:placeCode.integerValue];
-    if (topView == nil) {
+    if (topView == nil || [self.readBottomAdContainerView.subviews containsObject:topView]) {
         return;
     }
     CGRect topFrame = self.readBottomAdContainerView.bounds;
@@ -257,15 +302,19 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
     }
     
     if (error != nil) {
+        if (error.description != nil) {
+            NLAdLog(error.description, placeCode);
+        }
         [self.adLoadFailedSet addObject:placeId];
         [self.adAdapter switchToNextWithCode:placeCode];
         NSString *pid = [self.adAdapter placeIdWithCode:placeCode];
         if (!pid || [self.adLoadFailedSet containsObject:pid]) {
             return;
         }
-        [self loadNativeAdWithPlaceCode:pid completion:nil];
+        [self loadNativeAdWithPlaceCode:placeCode completion:nil];
     } else {
         [self.adLoadFailedSet removeObject:placeId];
+        [self showReadBottomAdViewIfNeededWithPlaceCode:placeCode];
     }
 }
 
@@ -284,28 +333,43 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
     
     self.rewardAdIsPlaying = NO;
     if (error != nil) {
+        if (error.description != nil) {
+            NLAdLog(error.description, placeCode);
+        }
         void(^rewardAdEarnReward)(NSError *) = [self.rewardAdEarnRewardDict objectForKey:placeId];
         if (rewardAdEarnReward) { rewardAdEarnReward(error); }
         if ([self.rewardAdEarnRewardDict.allKeys containsObject:placeId]) {
             [self.rewardAdEarnRewardDict removeObjectForKey:placeId];
         }
-    }
-    
-    if (error != nil) {
+        
+        [self.adLoadFailedSet addObject:placeId];
         [self.adAdapter switchToNextWithCode:placeCode];
-        if ([self.adLoadFailedSet containsObject:placeId]) {
+        NSString *pid = [self.adAdapter placeIdWithCode:placeCode];
+        if (!pid || [self.adLoadFailedSet containsObject:pid]) {
             return;
         }
-        [self.adLoadFailedSet addObject:placeId];
         [self loadRewardAdWithPlaceCode:placeCode completion:nil];
     } else {
         [self.adLoadFailedSet removeObject:placeId];
+        
+        /// 加载成功之后加载下一优先级，保持两个有效视频
+        self.rewardAdCount ++;
+        if (self.rewardAdCount < 3) {
+            [self.adAdapter switchToNextWithCode:placeCode];
+            NSString *pid = [self.adAdapter placeIdWithCode:placeCode];
+            [self loadNativeAdWithPlaceCode:placeCode completion:nil];
+        }
     }
 }
 
 - (void)adLoader:(nonnull id<NLPlatformAdLoaderProtocol>)manager showRewardAdFinishedWithPlaceCode:(NLAdPlaceCode)placeCode error:(nullable NSError *)error placeId:(nonnull NSString *)placeId {
+    if (error != nil) {
+        if (error.description != nil) {
+            NLAdLog(error.description, placeCode);
+        }
+    }
     self.rewardAdIsPlaying = NO;
-    if (placeCode != NLAdPlaceCodeUnknow && placeId.length > 0) {
+    if (placeCode != NLAdPlaceCodeUnknow && placeId != nil) {
         [self loadRewardAdWithPlaceCode:placeCode completion:nil];
     }
 }
@@ -332,6 +396,7 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
     if ([self.rewardAdEarnRewardDict.allKeys containsObject:placeId]) {
         [self.rewardAdEarnRewardDict removeObjectForKey:placeId];
     }
+//    [self loadRewardAdWithPlaceCode:placeCode completion:nil];
 }
 
 - (BOOL)isRewardAdPlaying {
@@ -358,16 +423,45 @@ static NSInteger const kReadBottomAdPlaceholderViewTag = 1002;
 - (BOOL)presentRewardAdInViewController:(UIViewController *)viewController
                               placeCode:(NLAdPlaceCode)placeCode
                  userDidEarnRewardBlock:(nullable void(^)(NSError * _Nullable error))block {
+//    self.rewardAdViewController = viewController;
+//
+//    NSString *placeId = [self.adAdapter placeIdWithCode:placeCode];
+//    if (block != nil) {
+//        [self.rewardAdEarnRewardDict setObject:block forKey:placeId];
+//    }
+//    id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode];
+//    BOOL successed = [adLoader presentRewardAdInViewController:viewController placeCode:placeCode placeId:placeId];
+//    self.rewardAdIsPlaying = successed;
+//    [self loadRewardAdWithPlaceCode:placeCode completion:nil];
+//    return successed;
+    return [self newPresent:viewController placeCode:placeCode userDidEarnRewardBlock:block];
+}
+
+- (BOOL)newPresent:(UIViewController *)viewController
+         placeCode:(NLAdPlaceCode)placeCode
+userDidEarnRewardBlock:(nullable void(^)(NSError * _Nullable error))block {
+    self.rewardAdCount --;
     self.rewardAdViewController = viewController;
-    NSString *placeId = [self.adAdapter placeIdWithCode:placeCode];
-    if (block != nil) {
-        [self.rewardAdEarnRewardDict setObject:block forKey:placeId];
+    BOOL successed = NO;
+    NSArray *list = [self.adAdapter listOfCode:placeCode];
+    for (id<NLAdPlatformModelProtocol> model in list) {
+        NSString *placeId = model.platformAdId;
+        if (block != nil) {
+            [self.rewardAdEarnRewardDict setObject:block forKey:placeId];
+        }
+        
+        id<NLPlatformAdLoaderProtocol> adLoader = [[NLPlatformAdLoaderConfig adLoaderList] objectForKey:@(model.platformType)];
+        if ([adLoader hasRewardAdWithPlaceCode:placeCode placeId:placeId]) {
+            adLoader.delegate = self;
+            successed = [adLoader presentRewardAdInViewController:viewController placeCode:placeCode placeId:placeId];
+            self.rewardAdIsPlaying = successed;
+            if (successed) {
+                return YES;
+            }
+        }
     }
-    id<NLPlatformAdLoaderProtocol> adLoader = [self adLoaderWithPlaceCode:placeCode];
-    BOOL successed = [adLoader presentRewardAdInViewController:viewController placeCode:placeCode placeId:placeId];
-    self.rewardAdIsPlaying = successed;
     [self loadRewardAdWithPlaceCode:placeCode completion:nil];
-    return successed;
+    return NO;
 }
 
 @end

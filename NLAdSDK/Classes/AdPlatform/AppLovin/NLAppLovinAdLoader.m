@@ -58,6 +58,14 @@
     
 }
 
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLReadAdPlaceCode)placeCode {
+    return nil;
+}
+
+- (BOOL)hasRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
+    return [ALIncentivizedInterstitialAd isReadyForDisplay];
+}
+
 // 激励
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
     if (![ALIncentivizedInterstitialAd isReadyForDisplay]) {
@@ -81,10 +89,6 @@
         self.playingPlaceCode = placeCode;
         self.playingPlaceId = placeId;
     }
-    else {
-        // No rewarded ad is currently available. Perform failover logic...
-        [ALIncentivizedInterstitialAd preloadAndNotify:self];
-    }
     return successed;
 }
 
@@ -95,10 +99,14 @@
 
 - (void)ad:(ALAd *)ad wasHiddenIn:(UIView *)view {
     // 用户点击关闭按钮，关闭广告
-    self.isRewardUser = false;
     if ([self.delegate respondsToSelector:@selector(adLoader:loadRewardAdFinishedWithPlaceCode:error:placeId:)]) {
         [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:self.playingPlaceCode error:nil placeId:self.playingPlaceId];
     }
+    
+    if (self.isRewardUser && [self.delegate respondsToSelector:@selector(adLoader:userDidEarnRewardWithPlaceCode:placeId:)]) {
+        [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:self.playingPlaceCode placeId:self.playingPlaceId];
+    }
+    self.isRewardUser = false;
 }
 
 - (void)ad:(ALAd *)ad wasClickedIn:(UIView *)view {
@@ -109,9 +117,6 @@
 
 - (void)rewardValidationRequestForAd:(ALAd *)ad didSucceedWithResponse:(NSDictionary *)response {
     self.isRewardUser = true;
-    if ([self.delegate respondsToSelector:@selector(adLoader:userDidEarnRewardWithPlaceCode:placeId:)]) {
-        [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:self.playingPlaceCode placeId:self.playingPlaceId];
-    }
 }
 
 - (void)rewardValidationRequestForAd:(ALAd *)ad didExceedQuotaWithResponse:(NSDictionary *)response

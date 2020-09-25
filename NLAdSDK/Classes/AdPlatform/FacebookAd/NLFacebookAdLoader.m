@@ -12,7 +12,6 @@
 #import "NLFacebookAdReadView.h"
 #import "NLPlatformAdLoaderConfig.h"
 #import "NLAdAttribute.h"
-#import "NLAdLog.h"
 #import "NLReadAdObject.h"
 @import FBAudienceNetwork;
 
@@ -29,7 +28,7 @@
 // 激励
 @property (nonatomic, strong) NSMutableDictionary<NSString *, FBRewardedVideoAd *> *rewardAdObjectDict;
 @property (nonatomic, strong) FBRewardedVideoAd *playingRewardAd;
-
+@property (nonatomic, assign) BOOL isRewardUser;
 @end
 
 @implementation NLFacebookAdLoader
@@ -108,7 +107,6 @@
 
 - (void)nativeAd:(FBNativeAd *)nativeAd didFailWithError:(NSError *)error {
     NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:nativeAd];
-    NLAdLog(error.description, placeCode);
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:loadAdFinishedWithPlaceCode:error:placeId:)]) {
         [self.delegate adLoader:self loadAdFinishedWithPlaceCode:placeCode error:error placeId:nativeAd.placementID];
     }
@@ -116,12 +114,13 @@
 
 - (void)nativeAdDidLoad:(FBNativeAd *)nativeAd {
     NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:nativeAd];
-    UIView *adView = nil;
+    
     if (placeCode == NLAdPlaceCodeNativeSplash) {
         NLFacebookAdSplashView *view = [NLFacebookAdSplashView createView];
         view.frame = [UIScreen mainScreen].bounds;
         [view setupAdModel:nativeAd];
-        adView = view;
+        [self.adViewDict setObject:view forKey:@(placeCode).stringValue];
+        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     } else if (placeCode == NLAdPlaceCodeNativeNovelRead
                || placeCode == NLAdPlaceCodeNativeComicRead) {
         NLReadAdObject *object = [[NLReadAdObject alloc] initWithPlaceCode:placeCode adPlatform:NLAdPlatformFacebook adObject:nativeAd];
@@ -132,10 +131,8 @@
         NLFacebookAdBannerView *view = [NLFacebookAdBannerView createView];
         view.frame = CGRectMake(0, 0, 320, 66);
         [view setupAdModel:nativeAd];
-        adView = view;
-    }
-    if (adView != nil) {
-        [self.adViewDict setObject:adView forKey:@(placeCode).stringValue];
+        [self.adViewDict setObject:view forKey:@(placeCode).stringValue];
+        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     }
     
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:loadAdFinishedWithPlaceCode:error:placeId:)]) {
@@ -155,8 +152,13 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)showApplicationStatusBar {
-    [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    [self setStatusBarHidden:false];
 }
+
+- (void)setStatusBarHidden:(BOOL)hidden {
+    [[UIApplication sharedApplication] setStatusBarHidden:hidden];
+}
+
 #pragma GCC diagnostic pop
 
 - (void)startLoadRewardAdWithPlaceId:(NSString *)placeId placeCode:(NLAdPlaceCode)placeCode {
@@ -170,7 +172,7 @@
     }
 }
 
-- (void)showRewardAdFailedWithError:(NSError *)error placeCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
+- (void)showRewardAdFinishWithError:(NSError *)error placeCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
     [self.rewardAdObjectDict removeObjectForKey:placeId];
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:showRewardAdFinishedWithPlaceCode:error:placeId:)]) {
         [self.delegate adLoader:self showRewardAdFinishedWithPlaceCode:placeCode error:error placeId:placeId];
@@ -195,6 +197,16 @@
 - (void)rewardedVideoAdDidClose:(FBRewardedVideoAd *)rewardedVideoAd {
     NSLog(@"rewardedVideoAdDidClose");
     [self showApplicationStatusBar];
+    
+    NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedVideoAd];
+    [self showRewardAdFinishWithError:nil placeCode:placeCode placeId:rewardedVideoAd.placementID];
+    
+    if (self.isRewardUser && self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:userDidEarnRewardWithPlaceCode:placeId:)]) {
+        NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedVideoAd];
+        [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:placeCode placeId:rewardedVideoAd.placementID];
+    }
+    
+    self.isRewardUser = false;
 }
 
 - (void)rewardedVideoAdWillClose:(FBRewardedVideoAd *)rewardedVideoAd {
@@ -204,7 +216,6 @@
 - (void)rewardedVideoAd:(FBRewardedVideoAd *)rewardedVideoAd didFailWithError:(NSError *)error {
     NSLog(@"rewardedVideoAd:didFailWithError");
     NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedVideoAd];
-    NLAdLog(error.description, placeCode);
     [self.rewardAdObjectDict removeObjectForKey:rewardedVideoAd.placementID];
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:loadRewardAdFinishedWithPlaceCode:error:placeId:)]) {
         [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:placeCode error:error placeId:rewardedVideoAd.placementID];
@@ -213,11 +224,7 @@
 
 - (void)rewardedVideoAdVideoComplete:(FBRewardedVideoAd *)rewardedVideoAd {
     NSLog(@"rewardedVideoAdVideoComplete");
-    [self showApplicationStatusBar];
-    if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:userDidEarnRewardWithPlaceCode:placeId:)]) {
-        NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedVideoAd];
-        [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:placeCode placeId:rewardedVideoAd.placementID];
-    }
+    self.isRewardUser = true;
 }
 
 - (void)rewardedVideoAdWillLogImpression:(FBRewardedVideoAd *)rewardedVideoAd {
@@ -253,8 +260,8 @@
 }
 
 - (nullable UIView *)adViewWithPlaceCode:(NLAdPlaceCode)placeCode {
+    [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
     UIView *adView = [self.adViewDict objectForKey:@(placeCode).stringValue];
-    [self.adViewDict removeObjectForKey:@(placeCode).stringValue];
     
     NLAdAttribute *attributes = [self.adAttributes objectForKey:@(placeCode).stringValue];
     if (placeCode == NLAdPlaceCodeNativeSplash) {
@@ -271,24 +278,29 @@
 }
 
 - (void)setAdAttributes:(NLAdAttribute *)attributes placeCode:(NLAdPlaceCode)placeCode {
-    [self.adAttributes setObject:attributes forKey:@(placeCode).stringValue];
+    if (placeCode == NLAdPlaceCodeNativeSplash) {
+        [self.adAttributes setObject:attributes forKey:@(placeCode).stringValue];
+    } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
+               || placeCode == NLAdPlaceCodeNativeComicBottom) {
+        [self.adAttributes setObject:attributes forKey:@(NLAdPlaceCodeNativeNovelBottom).stringValue];
+        [self.adAttributes setObject:attributes forKey:@(NLAdPlaceCodeNativeComicBottom).stringValue];
+    }
+    
     NSValue *viewValue = [self.adViewValues objectForKey:@(placeCode).stringValue];
-    UIView *adView = [viewValue nonretainedObjectValue];
-    if (adView != nil) {
-        if (placeCode == NLAdPlaceCodeNativeSplash) {
-            NLFacebookAdSplashView *view = (NLFacebookAdSplashView *)adView;
-            [view setAdConfig:attributes];
-        } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
-                   || placeCode == NLAdPlaceCodeNativeComicBottom) {
-            NLFacebookAdBannerView *view = (NLFacebookAdBannerView *)adView;
-            [view setAdConfig:attributes];
-        }
+    NLFacebookNativeAdView *adView = [viewValue nonretainedObjectValue];
+    if (adView != nil && [adView isKindOfClass:NLFacebookNativeAdView.class]) {
+        [adView setAdConfig:attributes];
     }
 }
 
 - (__kindof NSObject *)readAdObjectWithPlaceCode:(NLAdPlaceCode)placeCode {
     [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
     return [self.adObjectDict objectForKey:@(placeCode).stringValue];
+}
+
+- (BOOL)hasRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
+    FBRewardedVideoAd *rewardedAdObject = [self.rewardAdObjectDict objectForKey:placeId];
+    return rewardedAdObject != nil && rewardedAdObject.isAdValid;
 }
 
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
@@ -307,12 +319,19 @@
             successed = [rewardedAdObject showAdFromRootViewController:viewController];
             self.playingRewardAd = rewardedAdObject;
             [self.rewardAdObjectDict removeObjectForKey:placeId];
-            [self loadRewardAdWithPlaceCode:placeCode placeId:placeId];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self setStatusBarHidden:true];
+            });
         } else {
             NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:-1 userInfo:nil];
-            [self showRewardAdFailedWithError:error placeCode:placeCode placeId:placeId];
+            [self showRewardAdFinishWithError:error placeCode:placeCode placeId:placeId];
         }
     }
+    
+    if (successed) {
+        [self setStatusBarHidden:true];
+    }
+    
     return successed;
 }
 

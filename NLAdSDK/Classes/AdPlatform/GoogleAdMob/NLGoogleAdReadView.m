@@ -15,10 +15,6 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    
-    [self roundCorner:self cornerRadius:8];
-    [self roundCorner:self.iconView cornerRadius:12];
-    [self roundCorner:self.callToActionView cornerRadius:19];
 }
 
 - (void)layoutSubviews {
@@ -30,6 +26,10 @@
         self.bodyView.left = self.headlineView.left;
         self.bodyView.width = self.headlineView.width;
     }
+    
+    [self roundCorner:self cornerRadius:8];
+    [self roundCorner:self.iconView cornerRadius:12];
+    [self roundCorner:self.callToActionView cornerRadius:19];
 }
 
 - (void)setupAdModel:(GADUnifiedNativeAd *)nativeAd {
@@ -67,7 +67,10 @@
 }
 
 - (void)roundCorner:(UIView *)view cornerRadius:(CGFloat)cornerRadius {
-    CAShapeLayer *mask = [[CAShapeLayer alloc] init];
+    CAShapeLayer *mask = view.layer.mask;
+    if (mask == nil) {
+        mask = [[CAShapeLayer alloc] init];
+    }
     mask.frame = view.bounds;
     UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:view.bounds cornerRadius:cornerRadius];
     mask.path = path.CGPath;

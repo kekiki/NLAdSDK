@@ -22,6 +22,7 @@
 @property (nonatomic, assign) BOOL isRewardUser;
 /// key placeid value bool是否存在请求
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *adRewardDict;
+@property (nonatomic, assign) BOOL startSuccess;
 @end
 
 @implementation NLVungleAdLoader
@@ -73,6 +74,10 @@
     
 }
 
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLReadAdPlaceCode)placeCode {
+    return nil;
+}
+
 // 激励
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
     NSError* error;
@@ -81,15 +86,25 @@
     if (placementIsLoad.boolValue == true) return;
     
     if (![sdk isAdCachedForPlacementID:placeId]) {
-        BOOL placementIsLoad = [sdk loadPlacementWithID:placeId error:&error];
+        BOOL placementIsLoad = false;
+        if (self.startSuccess) {
+            placementIsLoad = [sdk loadPlacementWithID:placeId error:&error];
+        }
+        
         self.adRewardDict[placeId] = @(placementIsLoad);
         
         self.loadingPlaceCode = placeCode;
         // 广告开始播放
-        if ([self.delegate respondsToSelector:@selector(adLoader:loadRewardAdStartedWithPlaceCode:placeId:)]) {
+        if (placementIsLoad && [self.delegate respondsToSelector:@selector(adLoader:loadRewardAdStartedWithPlaceCode:placeId:)]) {
             [self.delegate adLoader:self loadRewardAdStartedWithPlaceCode:placeCode placeId:placeId];
+        } else if (error != nil) {
+            [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:placeCode error:error placeId:placeId];
         }
     }
+}
+
+- (BOOL)hasRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
+    return [[VungleSDK sharedSDK] isAdCachedForPlacementID:placeId];
 }
 
 - (BOOL)presentRewardAdInViewController:(UIViewController *)viewController placeCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId
@@ -104,28 +119,38 @@
         if (!error) {
             successed = true;
             self.playingPlaceCode = placeCode;
+            [self.adRewardDict removeObjectForKey:placeId];
         }
-    } else {
-        [self loadAdWithPlaceCode:placeCode placeId:placeId];
     }
+    [self loadRewardAdWithPlaceCode:placeCode placeId:placeId];
     return successed;
 }
 
 #pragma mark - VungleSDKDelegate
 - (void)vungleSDKDidInitialize{
 // 初始化成功
+    self.startSuccess = true;
+    [self.adRewardDict enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSNumber * _Nonnull obj, BOOL * _Nonnull stop) {
+        if (obj.boolValue == false) {
+            [self loadAdWithPlaceCode:self.loadingPlaceCode placeId:key];
+        }
+    }];
 }
 
 - (void)vungleSDKFailedToInitializeWithError:(NSError *)error{
 // 初始化失败
+    self.startSuccess = false;
 }
 
 - (void)vungleAdPlayabilityUpdate:(BOOL)isAdPlayable placementID:(nullable NSString *)placementID error:(nullable NSError *)error{
+    if (placementID == nil) return;
 // 缓存广告成功或失败
-    if (error == nil && isAdPlayable && [self.delegate respondsToSelector:@selector(adLoader:loadRewardAdFinishedWithPlaceCode:error:placeId:)]) {
-        [self.adRewardDict removeObjectForKey:placementID];
+    if (error == nil && isAdPlayable) {
+        
         [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:self.loadingPlaceCode error:error placeId:placementID];
-    }
+    } else {
+        [self.adRewardDict removeObjectForKey:placementID];
+    } 
 }
 
 - (void)vungleWillShowAdForPlacementID:(nullable NSString *)placementID{

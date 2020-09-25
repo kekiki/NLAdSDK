@@ -15,7 +15,6 @@
 #import "NLAdAttribute.h"
 #import "NLAdModelProtocol.h"
 #import "NLReadAdObject.h"
-#import "NLAdLog.h"
 
 @interface NLGoogleAdLoader()<GADUnifiedNativeAdLoaderDelegate, GADUnifiedNativeAdDelegate, GADRewardedAdDelegate>
 
@@ -31,7 +30,7 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, GADRewardedAd *> *rewardAdPortraitDict;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, GADRewardedAd *> *rewardAdLandscapeDict;
 @property (nonatomic, strong) GADRewardedAd *playingRewardAd;
-
+@property (nonatomic, assign) BOOL isRewardUser;
 @end
 
 @implementation NLGoogleAdLoader
@@ -135,7 +134,6 @@
 
 - (void)adLoader:(nonnull GADAdLoader *)adLoader didFailToReceiveAdWithError:(nonnull GADRequestError *)error {
     NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:adLoader];
-    NLAdLog(error.description, placeCode);
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:loadAdFinishedWithPlaceCode:error:placeId:)]) {
         [self.delegate adLoader:self loadAdFinishedWithPlaceCode:placeCode error:error placeId:adLoader.adUnitID];
     }
@@ -151,12 +149,12 @@
 - (void)adLoader:(nonnull GADAdLoader *)adLoader didReceiveUnifiedNativeAd:(nonnull GADUnifiedNativeAd *)nativeAd {
     nativeAd.delegate = self;
     NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:adLoader];
-    UIView *adView = nil;
     if (placeCode == NLAdPlaceCodeNativeSplash) {
         NLGoogleAdSplashView *view = [NLGoogleAdSplashView createView];
         view.frame = [UIScreen mainScreen].bounds;
         [view setupAdModel:nativeAd];
-        adView = view;
+        [self.adViewDict setObject:view forKey:@(placeCode).stringValue];
+        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     } else if (placeCode == NLAdPlaceCodeNativeNovelRead || placeCode == NLAdPlaceCodeNativeComicRead) {
         NLReadAdObject *object = [[NLReadAdObject alloc] initWithPlaceCode:placeCode adPlatform:NLAdPlatformAdmob adObject:nativeAd];
         [self.adObjectDict setObject:object forKey:@(placeCode).stringValue];
@@ -165,10 +163,8 @@
         NLGoogleAdBannerView *view = [NLGoogleAdBannerView createView];
         view.frame = CGRectMake(0, 0, 320, 66);
         [view setupAdModel:nativeAd];
-        adView = view;
-    }
-    if (adView != nil) {
-        [self.adViewDict setObject:adView forKey:@(placeCode).stringValue];
+        [self.adViewDict setObject:view forKey:@(placeCode).stringValue];
+        [self.invalidAdPlaceCodeSet removeObject:@(placeCode).stringValue];
     }
 }
 
@@ -228,14 +224,13 @@
 }
 
 - (void)loadRewardAdFailedWithError:(NSError *)error placeCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
-    NLAdLog(error.description, placeCode);
     [self.rewardAdObjectDict removeObjectForKey:placeId];
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:loadRewardAdFinishedWithPlaceCode:error:placeId:)]) {
         [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:placeCode error:error placeId:placeId];
     }
 }
 
-- (void)showRewardAdFailedWithError:(NSError *)error placeCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
+- (void)showRewardAdFinishWithError:(NSError *)error placeCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
     [self.rewardAdObjectDict removeObjectForKey:placeId];
     if (self.delegate != nil && [self.delegate respondsToSelector:@selector(adLoader:showRewardAdFinishedWithPlaceCode:error:placeId:)]) {
         [self.delegate adLoader:self showRewardAdFinishedWithPlaceCode:placeCode error:error placeId:placeId];
@@ -251,13 +246,12 @@
 #pragma mark - GADRewardedAdDelegate
 
 - (void)rewardedAd:(GADRewardedAd *)rewardedAd userDidEarnReward:(GADAdReward *)reward {
-    NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedAd];
-    [self userDidEarnRewardWithPlaceCode:placeCode placeId:rewardedAd.adUnitID];
+    self.isRewardUser = true;
 }
 
 - (void)rewardedAd:(GADRewardedAd *)rewardedAd didFailToPresentWithError:(NSError *)error {
     NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedAd];
-    [self showRewardAdFailedWithError:error placeCode:placeCode placeId:rewardedAd.adUnitID];
+    [self showRewardAdFinishWithError:error placeCode:placeCode placeId:rewardedAd.adUnitID];
 }
 
 - (void)rewardedAdDidPresent:(GADRewardedAd *)rewardedAd {
@@ -266,6 +260,12 @@
 
 - (void)rewardedAdDidDismiss:(GADRewardedAd *)rewardedAd {
      NSLog(@"<------------> rewardedAdDidDismiss");
+    NLAdPlaceCode placeCode = [self placeCodeWithAdLoader:rewardedAd];
+    if (self.isRewardUser) {
+        [self userDidEarnRewardWithPlaceCode:placeCode placeId:rewardedAd.adUnitID];
+    }
+    [self showRewardAdFinishWithError:nil placeCode:placeCode placeId:rewardedAd.adUnitID];
+    self.isRewardUser = false;
 }
 
 #pragma mark - NotificationCenter
@@ -325,16 +325,19 @@
 }
 
 - (nullable UIView *)adViewWithPlaceCode:(NLAdPlaceCode)placeCode {
+    [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
     UIView *adView = [self.adViewDict objectForKey:@(placeCode).stringValue];
-    [self.adViewDict removeObjectForKey:@(placeCode).stringValue];
     
     NLAdAttribute *attributes = [self.adAttributes objectForKey:@(placeCode).stringValue];
-    if (placeCode == NLAdPlaceCodeNativeSplash) {
-        NLGoogleAdSplashView *view = (NLGoogleAdSplashView *)adView;
-        [view setAdConfig:attributes];
-    } else if (placeCode == NLAdPlaceCodeNativeNovelBottom || placeCode == NLAdPlaceCodeNativeComicBottom) {
-        NLGoogleAdBannerView *view = (NLGoogleAdBannerView *)adView;
-        [view setAdConfig:attributes];
+    if (attributes != nil) {
+
+        if (placeCode == NLAdPlaceCodeNativeSplash) {
+            NLGoogleAdSplashView *view = (NLGoogleAdSplashView *)adView;
+            [view setAdConfig:attributes];
+        } else if (placeCode == NLAdPlaceCodeNativeNovelBottom || placeCode == NLAdPlaceCodeNativeComicBottom) {
+            NLGoogleAdBannerView *view = (NLGoogleAdBannerView *)adView;
+            [view setAdConfig:attributes];
+        }
     }
     NSValue *value = [NSValue valueWithNonretainedObject:adView];
     [self.adViewValues setObject:value forKey:@(placeCode).stringValue];
@@ -342,24 +345,29 @@
 }
 
 - (void)setAdAttributes:(NLAdAttribute *)attributes placeCode:(NLAdPlaceCode)placeCode {
-    [self.adAttributes setObject:attributes forKey:@(placeCode).stringValue];
+    if (placeCode == NLAdPlaceCodeNativeSplash) {
+        [self.adAttributes setObject:attributes forKey:@(placeCode).stringValue];
+    } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
+               || placeCode == NLAdPlaceCodeNativeComicBottom) {
+        [self.adAttributes setObject:attributes forKey:@(NLAdPlaceCodeNativeNovelBottom).stringValue];
+        [self.adAttributes setObject:attributes forKey:@(NLAdPlaceCodeNativeComicBottom).stringValue];
+    }
+    
     NSValue *viewValue = [self.adViewValues objectForKey:@(placeCode).stringValue];
-    UIView *adView = [viewValue nonretainedObjectValue];
-    if (adView != nil) {
-        if (placeCode == NLAdPlaceCodeNativeSplash) {
-            NLGoogleAdSplashView *view = (NLGoogleAdSplashView *)adView;
-            [view setAdConfig:attributes];
-        } else if (placeCode == NLAdPlaceCodeNativeNovelBottom
-                   || placeCode == NLAdPlaceCodeNativeComicBottom) {
-            NLGoogleAdBannerView *view = (NLGoogleAdBannerView *)adView;
-            [view setAdConfig:attributes];
-        }
+    NLGoogleNativeAdView *adView = [viewValue nonretainedObjectValue];
+    if (adView != nil && [adView isKindOfClass:NLGoogleNativeAdView.class]) {
+        [adView setAdConfig:attributes];
     }
 }
 
 - (__kindof NSObject *)readAdObjectWithPlaceCode:(NLAdPlaceCode)placeCode {
     [self.invalidAdPlaceCodeSet addObject:@(placeCode).stringValue];
     return [self.adObjectDict objectForKey:@(placeCode).stringValue];
+}
+
+- (BOOL)hasRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
+    GADRewardedAd *rewardedAdObject = [self.rewardAdObjectDict objectForKey:placeId];
+    return rewardedAdObject != nil && rewardedAdObject.ready;
 }
 
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
@@ -378,10 +386,10 @@
             [rewardedAdObject presentFromRootViewController:viewController delegate:self];
             self.playingRewardAd = rewardedAdObject;
             [self.rewardAdObjectDict removeObjectForKey:placeId];
-            [self loadRewardAdWithPlaceCode:placeCode placeId:placeId];
+            [self startLoadRewardAdWithPlaceId:placeId placeCode:placeCode];
             successed = YES;
         } else {
-            [self showRewardAdFailedWithError:error placeCode:placeCode placeId:placeId];
+            [self showRewardAdFinishWithError:error placeCode:placeCode placeId:placeId];
         }
     }
     return successed;

@@ -14,10 +14,9 @@
     self = [super init];
     if (self) {
         self.titleColor = [UIColor blackColor];
-        self.detailColor = [UIColor grayColor];
+        self.detailColor = [UIColor blackColor];
         self.iconAlpha = 1.0f;
         self.mediaAlpha = 1.0f;
-        self.buttonTitleColor = [UIColor whiteColor];
         self.buttonBackgroundColor = [UIColor clearColor];
         self.buttonTitleColor = [UIColor blackColor];
         self.buttonBorderColor = [UIColor blackColor];

@@ -32,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param placeCode 广告位代码
 - (void)switchToNextWithCode:(NLAdPlaceCode)placeCode;
 
+/// 获取某一广告位配置列表
+- (nullable NSMutableArray<NLAdPlatformModelProtocol> *)listOfCode:(NLAdPlaceCode)placeCode;
+
 @end
 
 NS_ASSUME_NONNULL_END

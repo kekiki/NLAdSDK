@@ -16,6 +16,8 @@
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id<CHBAd>> *adRewardDict;
 @property (nonatomic, assign) BOOL startSuccess;
 @property (nonatomic, assign) BOOL isRewardUser;
+@property (nonatomic, assign) NLAdPlaceCode loadingPlaceCode;
+@property (nonatomic, strong) CHBRewarded *playingRewarded;
 @end
 
 @implementation NLChartBoostAdLoader
@@ -69,12 +71,26 @@
     
 }
 
+- (__kindof NSObject *)readAdObjectWithPlaceCode:(NLReadAdPlaceCode)placeCode {
+    return nil;
+}
+
+- (BOOL)hasRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
+    NSObject *loadingRewarded = self.adRewardDict[placeId];
+    if ([loadingRewarded isKindOfClass:CHBRewarded.class]) {
+        CHBRewarded *rewarded = (CHBRewarded *)loadingRewarded;
+        return rewarded.isCached;
+    }
+    return NO;
+}
+
 // 激励
 - (void)loadRewardAdWithPlaceCode:(NLAdPlaceCode)placeCode placeId:(NSString *)placeId {
     id<CHBAd> loadingRewarded = self.adRewardDict[placeId];
     if (loadingRewarded != nil) {  return;  }
     
     CHBRewarded *rewarded = [[CHBRewarded alloc] initWithLocation:CBLocationDefault delegate:self];
+    self.loadingPlaceCode = placeCode;
     if (self.startSuccess) {
         [rewarded cache];
     }
@@ -90,10 +106,10 @@
         CHBRewarded *rewarded = (CHBRewarded *)loadingRewarded;
         if (rewarded.isCached) {
             [rewarded showFromViewController:viewController];
+            self.playingRewarded = rewarded;
             successed = true;
+            [self.adRewardDict removeObjectForKey:placeId];
         }
-    } else if (loadingRewarded == nil) {
-        [self loadRewardAdWithPlaceCode:placeCode placeId:placeId];
     }
     return successed;
 }
@@ -126,13 +142,9 @@
     
     NSError *rewardError = nil;
     if (error != nil) {
-        rewardError =
-        [NSError errorWithDomain:@"ChartBoost.com"
-                                            code:error.code
-                                        userInfo:@{NSLocalizedDescriptionKey: @"ChartBoost 激励广告加载失败"}];
         [self.adRewardDict removeObjectForKey:placeId];
     }
-    [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:NLAdPlaceCodeUnknow error:rewardError placeId:placeId];
+    [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:self.loadingPlaceCode error:error placeId:placeId];
 }
 
 - (void)willShowAd:(CHBShowEvent *)event {
@@ -140,24 +152,34 @@
 }
 
 - (void)didDismissAd:(CHBDismissEvent *)event {
-    NSString *placeId = [self placeIdForEvent:event];
+    NSString *placeId = [self placeIdForEvent:event] ?: @"";
     if (placeId == nil) return;
+    NLAdPlaceCode placeCode = [self placeCodeForPlaceId:placeId];
     
     if (self.isRewardUser) {
         if ([self.delegate respondsToSelector:@selector(adLoader:userDidEarnRewardWithPlaceCode:placeId:)]) {
-            [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:NLAdPlaceCodeUnknow placeId:placeId];
+            [self.delegate adLoader:self userDidEarnRewardWithPlaceCode:placeCode placeId:placeId];
         }
         self.isRewardUser = false;
     }
     
     // 用户点击关闭按钮，关闭广告
     if ([self.delegate respondsToSelector:@selector(adLoader:loadRewardAdFinishedWithPlaceCode:error:placeId:)]) {
-        [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:NLAdPlaceCodeUnknow error:nil placeId:placeId];
+        [self.delegate adLoader:self loadRewardAdFinishedWithPlaceCode:placeCode error:nil placeId:placeId];
     }
 }
 
 
 #pragma mark - property
+
+- (NLAdPlaceCode)placeCodeForPlaceId:(NSString *)placeId {
+    NLAdPlaceCode placeCode = NLAdPlaceCodeUnknow;
+    if ([self.adPlaceCodeIdDict.allValues containsObject:placeId]) {
+        NSArray<NSNumber *> *codeArrays = [self.adPlaceCodeIdDict allKeysForObject:placeId];
+        placeCode = codeArrays.lastObject.integerValue;
+    }
+    return placeCode;
+}
 
 - (NSString *)appID { return @"5f69c5468556a007eda1c832"; }
 - (NSString *)appSignature { return @"0608d49f0edc7747cd5875e294da1b960a50c294"; }

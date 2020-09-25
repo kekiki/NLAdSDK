@@ -208,7 +208,7 @@ static NSString * const kAdLockName = @"com.pailing.adapterLock";
         placeId = self.currentRewardSign.platformAdId;
     } else if (placeCode == NLAdPlaceCodeRewardOpenBox) {
         placeId = self.currentRewardOpenBox.platformAdId;
-    } else if (placeCode >= NLAdPlaceCodeRewardBindPhone) {
+    } else if (placeCode == NLAdPlaceCodeRewardBindPhone) {
         placeId = self.currentRewardBindPhone.platformAdId;
     } else if (placeCode == NLAdPlaceCodeRewardNovelDownload) {
         placeId = self.currentRewardDownloadNovel.platformAdId;
@@ -290,7 +290,7 @@ static NSString * const kAdLockName = @"com.pailing.adapterLock";
         list = self.rewardSignList;
     } else if (placeCode == NLAdPlaceCodeRewardOpenBox) {
         list = self.rewardOpenBoxList;
-    } else if (placeCode >= NLAdPlaceCodeRewardBindPhone) {
+    } else if (placeCode == NLAdPlaceCodeRewardBindPhone) {
         list = self.rewardBindPhoneList;
     } else if (placeCode == NLAdPlaceCodeRewardNovelDownload) {
         list = self.rewardDownloadNovelList;
@@ -324,7 +324,7 @@ static NSString * const kAdLockName = @"com.pailing.adapterLock";
         model = self.currentRewardSign;
     } else if (placeCode == NLAdPlaceCodeRewardOpenBox) {
         model = self.currentRewardOpenBox;
-    } else if (placeCode >= NLAdPlaceCodeRewardBindPhone) {
+    } else if (placeCode == NLAdPlaceCodeRewardBindPhone) {
         model = self.currentRewardBindPhone;
     } else if (placeCode == NLAdPlaceCodeRewardNovelDownload) {
         model = self.currentRewardDownloadNovel;
@@ -357,7 +357,7 @@ static NSString * const kAdLockName = @"com.pailing.adapterLock";
         self.currentRewardSign = model;
     } else if (placeCode == NLAdPlaceCodeRewardOpenBox) {
         self.currentRewardOpenBox = model;
-    } else if (placeCode >= NLAdPlaceCodeRewardBindPhone) {
+    } else if (placeCode == NLAdPlaceCodeRewardBindPhone) {
         self.currentRewardBindPhone = model;
     } else if (placeCode == NLAdPlaceCodeRewardNovelDownload) {
         self.currentRewardDownloadNovel = model;
